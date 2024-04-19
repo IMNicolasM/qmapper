@@ -1,9 +1,9 @@
-const pages = config('pages') // Get Pages from config
+import pages from 'src/setup/pages' // Get Pages from config
 
 //Webhook
 export default [
   {
-    title: 'Mapping',
+    title: 'Mapping (PT)',
     icon: 'fa-light fa-webhook',
     children: [
       pages.qmapper.references,
