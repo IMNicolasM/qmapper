@@ -1,9 +1,7 @@
 export default {
-  moduleName: 'iwebhooks',
+  moduleName: 'imapper',
   //Entities
   entityNames: {
-    log: 'log',
-    hook: 'hook',
-    category: 'category',
+    references: 'references',
   },
 }

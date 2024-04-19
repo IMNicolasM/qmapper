@@ -10,9 +10,8 @@ export default {
     crudData() {
       return {
         crudId: this.crudId,
-        entityName: config("main.qwebhook.entityNames.category"),
-        apiRoute: 'apiRoutes.qwebhook.categories',
-        permission: 'iwebhooks.categories',
+        entityName: config("main.qmapper.entityNames.references"),
+        apiRoute: 'apiRoutes.qmapper.references',
         create: {
           title: this.$tr('iwebhooks.cms.title.newCategory'),
         },

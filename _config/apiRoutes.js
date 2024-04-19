@@ -1,4 +1,4 @@
-const moduleName = 'iwebhooks';
+const moduleName = 'imapper';
 const moduleVersion = 'v1';
 const urlBase = `/${moduleName}/${moduleVersion}`
 
@@ -6,7 +6,5 @@ const urlBase = `/${moduleName}/${moduleVersion}`
 export default {
   urlBase : urlBase,
   version: moduleVersion,
-  categories: `${urlBase}/categories`,
-  hooks: `${urlBase}/hooks`,
-  logs: `${urlBase}/logs`
+  references: `${urlBase}/references`
 }

@@ -1,8 +1,8 @@
-## QWEBHOOK | 2.0.5
+## QMAPPER | 2.0.5
 
 ## Installation
 
-`` npm i @imagina/qwebhook@22.1.19 ``
+`` npm i @imagina/qmapper@22.1.19 ``
 
 ## API Routes
 
