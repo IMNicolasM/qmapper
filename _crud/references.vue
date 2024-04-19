@@ -59,56 +59,73 @@ export default {
             field: 'UNI_RefID'
           }
         },
-        delete: true,
         formLeft: {
           UNI_RefID: { value: '' },
-          title: {
-            value: '',
-            type: 'input',
-            isTranslatable: true,
-            required: true,
-            props: {
-              label: `${this.$tr('isite.cms.form.title')}*`
-            }
-          },
-          slug: {
-            value: '',
-            type: 'input',
-            isTranslatable: true,
-            required: true,
-            props: {
-              label: `${this.$tr('isite.cms.form.slug')}*`
-            }
-          },
-          systemName: {
+          TableColumnName: {
             value: '',
             type: 'input',
             required: true,
             props: {
-              label: `${this.$tr('isite.cms.form.systemName')}*`
+              readonly: true,
+              label: 'Column name'
             }
           },
-          description: {
-            name: 'description',
+          TablePK_EDW: {
             value: '',
-            type: 'html',
-            isTranslatable: true,
+            type: 'input',
             required: true,
             props: {
-              label: `${this.$tr('isite.cms.form.description')}*`
+              readonly: true,
+              label: 'Table PK (EDW)'
             }
           },
-          status: {
-            value: '1',
-            type: 'select',
+          TableColumnValue: {
+            value: '',
+            type: 'input',
+            required: true,
             props: {
-              label: `${this.$tr('isite.cms.form.status')}*`,
-              options: [
-                { label: this.$tr('isite.cms.label.enabled'), value: '1' },
-                { label: this.$tr('isite.cms.label.disabled'), value: '0' }
-              ]
+              readonly: true,
+              label: 'Column value'
             }
-          }
+          },
+          "Data owners": {
+            value: '',
+            type: 'input',
+            required: true,
+            props: {
+              readonly: true,
+              label: 'Data owners'
+            }
+          },
+        },
+        formRight: {
+          UnifiedValue: {
+            value: '',
+            type: 'input',
+            required: true,
+            props: {
+              readonly: true,
+              label: 'Unified Value'
+            }
+          },
+          UnifiedValue_Group: {
+            value: '',
+            type: 'input',
+            required: true,
+            props: {
+              readonly: true,
+              label: 'Unified Value Group'
+            }
+          },
+          UnifiedValue_Category: {
+            value: '',
+            type: 'input',
+            required: true,
+            props: {
+              readonly: true,
+              label: 'Unified Value Category'
+            }
+          },
         }
       };
     },
