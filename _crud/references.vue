@@ -19,13 +19,28 @@ export default {
         read: {
           columns: [
             { name: 'id', label: this.$tr('isite.cms.form.id'), field: 'id', align: 'left' },
-            { name: 'TableColumnName', label: 'Column name', field: 'TableColumnName', align: 'rigth' },
+            { name: 'TableColumnName', label: 'Column name', field: 'TableColumnName', align: 'rigth', sortable: true },
             { name: 'TablePK_EDW', label: 'Table PK (EDW)', field: 'TablePK_EDW', align: 'left' },
-            { name: 'TableColumnValue', label: 'Column value', field: 'TableColumnValue', align: 'rigth' },
+            {
+              name: 'TableColumnValue',
+              label: 'Column value',
+              field: 'TableColumnValue',
+              sortable: true,
+              align: 'rigth',
+              format: val => val ?? '-'
+            },
+            {
+              name: 'MatchType',
+              label: 'Match type',
+              field: 'MatchType',
+              align: 'center',
+              format: val => val ?? '-'
+            },
             {
               name: 'UnifiedValue',
               label: 'Unified Value',
               field: 'UnifiedValue',
+              sortable: true,
               align: 'center',
               format: val => val ?? '-'
             },
@@ -40,6 +55,7 @@ export default {
               name: 'UnifiedValue_Group',
               label: 'Unified Value Group',
               field: 'UnifiedValue_Group',
+              sortable: true,
               align: 'center',
               format: val => val ?? '-'
             },
@@ -47,11 +63,55 @@ export default {
               name: 'UnifiedValue_Category',
               label: 'Unified Value Category',
               field: 'UnifiedValue_Category',
+              sortable: true,
               align: 'center',
               format: val => val ?? '-'
             },
             { name: 'actions', label: this.$tr('isite.cms.form.actions'), align: 'left' }
-          ]
+          ],
+          filters: {
+            Division: {
+              value: null,
+              type: 'select',
+              quickFilter: true,
+              props: {
+                label: 'Division',
+                clearable: true
+              },
+              loadOptions: {
+                apiRoute: 'apiRoutes.qmapper.references',
+                select: { label: 'Division', id: 'Division' },
+                requestParams: { filter: { _distinct: 'Division' } }
+              }
+            },
+            MappingInd: {
+              value: 'UNMAPPED',
+              type: 'select',
+              quickFilter: true,
+              props: {
+                label: 'Mapping indicator',
+                options: [
+                  { label: 'UNMAPPED', value: 'UNMAPPED' },
+                  { label: 'MAPPED', value: 'MAPPED' }
+                ]
+              }
+            },
+            TableColumnName: {
+              value: null,
+              type: 'select',
+              quickFilter: true,
+              props: {
+                label: 'Column Name',
+                clearable: true,
+                class: 'col-md-6'
+              },
+              loadOptions: {
+                apiRoute: 'apiRoutes.qmapper.references',
+                select: { label: 'TableColumnName', id: 'TableColumnName' },
+                requestParams: { filter: { _distinct: 'TableColumnName' } }
+              }
+            }
+          }
         },
         update: {
           title: this.$tr('iwebhooks.cms.title.updateCategory'),
@@ -88,7 +148,7 @@ export default {
               label: 'Column value'
             }
           },
-          "Data owners": {
+          'Data owners': {
             value: '',
             type: 'input',
             required: true,
@@ -96,7 +156,7 @@ export default {
               readonly: true,
               label: 'Data owners'
             }
-          },
+          }
         },
         formRight: {
           UnifiedValue: {
@@ -125,7 +185,7 @@ export default {
               readonly: true,
               label: 'Unified Value Category'
             }
-          },
+          }
         }
       };
     },
