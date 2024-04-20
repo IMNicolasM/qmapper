@@ -12,9 +12,9 @@ export default {
         crudId: this.crudId,
         entityName: config('main.qmapper.entityNames.references'),
         apiRoute: 'apiRoutes.qmapper.references',
-        permission: 'profile.user',
+        permission: 'imapper.references',
         create: {
-          title: this.$tr('iwebhooks.cms.title.newCategory')
+          title: 'Create New Value'
         },
         read: {
           columns: [
@@ -114,7 +114,7 @@ export default {
           }
         },
         update: {
-          title: this.$tr('iwebhooks.cms.title.updateCategory'),
+          title: 'Update Value',
           requestParams: {
             field: 'UNI_RefID'
           }
