@@ -4,10 +4,6 @@ export default {
   data() {
     return {
       crudId: this.$uid(),
-      selectedColumnValue: null,
-      selectedUnifiedValue: null,
-      selectedUnifiedValue_Group: null,
-      selectedUnifiedValue_Category: null,
       optionsColumnValue: [],
       optionsUnifiedValue: [],
       optionsUnifiedValue_Group: [],
@@ -16,6 +12,66 @@ export default {
   },
   computed: {
     crudData() {
+      const columnName = this.crudInfo.TableColumnName
+      const columnValue = this.crudInfo.TableColumnValue
+      const unifiedValue = this.crudInfo.UnifiedValue
+
+      const loadOptions = {
+        columnValue: columnName ? {
+          loadOptions: {
+            apiRoute: 'apiRoutes.qmapper.references',
+            select: { label: 'TableColumnValue', id: 'TableColumnValue' },
+            requestParams: {
+              filter: {
+                _distinct: 'TableColumnValue',
+                TableColumnName: this.crudInfo.TableColumnName
+              }
+            }
+          }
+        } : {},
+        unifiedValue: columnValue ? {
+          loadOptions: {
+            apiRoute: 'apiRoutes.qmapper.references',
+            select: { label: 'UnifiedValue', id: 'UnifiedValue' },
+            requestParams: {
+              filter: {
+                _distinct: 'UnifiedValue',
+                TableColumnName: columnName,
+                TableColumnValue: columnValue
+              }
+            }
+          }
+        } : {},
+        unifiedValueGroup: unifiedValue ? {
+          loadOptions: {
+            apiRoute: 'apiRoutes.qmapper.references',
+            select: { label: 'UnifiedValue_Group', id: 'UnifiedValue_Group' },
+            requestParams: {
+              filter: {
+                _distinct: 'UnifiedValue_Group',
+                TableColumnName: columnName,
+                TableColumnValue: columnValue,
+                UnifiedValue: unifiedValue
+              }
+            }
+          }
+        } : {},
+        UnifiedValueCategory: unifiedValue ? {
+          loadOptions: {
+            apiRoute: 'apiRoutes.qmapper.references',
+            select: { label: 'UnifiedValue_Category', id: 'UnifiedValue_Category' },
+            requestParams: {
+              filter: {
+                _distinct: 'UnifiedValue_Category',
+                TableColumnName: columnName,
+                TableColumnValue: columnValue,
+                UnifiedValue: unifiedValue
+              }
+            }
+          }
+        } : {},
+      };
+      console.warn(loadOptions)
       return {
         crudId: this.crudId,
         entityName: config('main.qmapper.entityNames.references'),
@@ -35,7 +91,7 @@ export default {
               sortable: true,
               action: 'edit'
             },
-            { name: 'TablePK_EDW', label: 'Table PK (EDW)', field: 'TablePK_EDW', align: 'left' },
+            { name: 'TablePK_EDW', label: 'Table PK (EDW)', field: 'TablePK_EDW', align: 'left', sortable: true },
             {
               name: 'TableColumnValue',
               label: 'Column value',
@@ -126,7 +182,11 @@ export default {
                 requestParams: { filter: { _distinct: 'TableColumnName' } }
               }
             }
-          }
+          },
+          requestParams: {
+            notToSnakeCase: ['TableColumnName', 'TableColumnValue', 'TablePK_EDW']
+          },
+          excludeActions: ['export', 'sync', 'recommendations']
         },
         update: {
           title: 'Update Value',
@@ -142,7 +202,8 @@ export default {
             required: true,
             props: {
               readonly: this.crudInfo.typeForm === 'update',
-              label: 'Column name'
+              label: 'Column name',
+              clearable: true
             },
             loadOptions: {
               apiRoute: 'apiRoutes.qmapper.references',
@@ -160,33 +221,17 @@ export default {
             }
           },
           TableColumnValue: {
-            value: this.selectedColumnValue,
+            value: null,
             type: 'select',
             required: true,
-            handler: {
-              label: 'Add New Column Value',
-              selectNewValue: (val) => {
-                this.optionsColumnValue.push({ label: val, value: val });
-                this.selectedColumnValue = val
-              }
-            },
             props: {
+              'fill-input': true,
+              'hide-selected': true,
               readonly: (this.crudInfo.typeForm === 'update' || !this.crudInfo.TableColumnName),
               label: 'Column value',
-              options: this.optionsColumnValue,
+              options: [],
             },
-            loadOptions: {
-              apiRoute: 'apiRoutes.qmapper.references',
-              select: { label: 'TableColumnValue', id: 'TableColumnValue' },
-              requestParams: {
-                filter: {
-                  _distinct: 'TableColumnValue',
-                  TableColumnName: this.crudInfo.TableColumnName
-                }
-              },
-              filterByQuery: true,
-              filterLengthQuery: 0
-            }
+            ...loadOptions.columnValue
           },
           'Data owners': {
             value: '',
@@ -212,102 +257,46 @@ export default {
             }
           },
           UnifiedValue: {
-            value: this.selectedUnifiedValue,
+            value: null,
             type: 'select',
             required: true,
-            handler: {
-              label: 'Add New Unified Value',
-              selectNewValue: (val) => {
-                this.optionsUnifiedValue.push({ label: val, value: val });
-                this.selectedUnifiedValue = val
-              }
-            },
             props: {
+              'fill-input': true,
+              'hide-selected': true,
               readonly: !this.crudInfo.TableColumnValue,
               label: 'Unified Value',
               options: this.optionsUnifiedValue
             },
-            loadOptions: {
-              apiRoute: 'apiRoutes.qmapper.references',
-              select: { label: 'UnifiedValue', id: 'UnifiedValue' },
-              requestParams: {
-                filter: {
-                  _distinct: 'UnifiedValue',
-                  TableColumnName: this.crudInfo.TableColumnName,
-                  TableColumnValue: this.crudInfo.TableColumnValue
-                }
-              },
-              filterByQuery: true,
-              filterLengthQuery: 0
-            }
+            ...loadOptions.unifiedValue
           },
           UnifiedValue_Group: {
-            value: this.selectedUnifiedValue_Group,
+            value: null,
             type: 'select',
-            required: true,
-            handler: {
-              label: 'Add New Unified Value Group',
-              selectNewValue: (val) => {
-                this.optionsUnifiedValue_Group.push({ label: val, value: val });
-                this.selectedUnifiedValue_Group = val
-              }
-            },
             props: {
+              'fill-input': true,
+              'hide-selected': true,
               readonly: !this.crudInfo.UnifiedValue,
               label: 'Unified Value Group',
               options: this.optionsUnifiedValue_Group
             },
-            loadOptions: {
-              apiRoute: 'apiRoutes.qmapper.references',
-              select: { label: 'UnifiedValue_Group', id: 'UnifiedValue_Group' },
-              requestParams: {
-                filter: {
-                  _distinct: 'UnifiedValue_Group',
-                  TableColumnName: this.crudInfo.TableColumnName,
-                  TableColumnValue: this.crudInfo.TableColumnValue,
-                  UnifiedValue: this.crudInfo.UnifiedValue
-                }
-              },
-              filterByQuery: true,
-              filterLengthQuery: 0
-            }
+            ...loadOptions.unifiedValueGroup
           },
           UnifiedValue_Category: {
-            value: this.selectedUnifiedValue_Category,
+            value: null,
             type: 'select',
-            required: true,
-            handler: {
-              label: 'Add New Unified Value Category',
-              selectNewValue: (val) => {
-                this.optionsUnifiedValue_Category.push({ label: val, value: val });
-                this.selectedUnifiedValue_Category = val
-              }
-            },
             props: {
+              'fill-input': true,
+              'hide-selected': true,
               readonly: !this.crudInfo.UnifiedValue,
               label: 'Unified Value Category',
               options: this.optionsUnifiedValue_Category
             },
-            loadOptions: {
-              apiRoute: 'apiRoutes.qmapper.references',
-              select: { label: 'UnifiedValue_Category', id: 'UnifiedValue_Category' },
-              requestParams: {
-                filter: {
-                  _distinct: 'UnifiedValue_Category',
-                  TableColumnName: this.crudInfo.TableColumnName,
-                  TableColumnValue: this.crudInfo.TableColumnValue,
-                  UnifiedValue: this.crudInfo.UnifiedValue
-                }
-              },
-              filterByQuery: true,
-              filterLengthQuery: 0
-            }
+            ...loadOptions.UnifiedValueCategory
           }
         },
         handleFormUpdates: (formData, changedFields, formType) => {
           return new Promise(resolve => {
             if (changedFields.length === 1) {
-              console.warn(formData, changedFields)
               if(changedFields.includes('TableColumnName')) {
                 formData = {
                   ...formData,
@@ -325,7 +314,6 @@ export default {
                   UnifiedValue_Category: null
                 };
               }
-
             }
             resolve(formData);
           });

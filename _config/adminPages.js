@@ -9,7 +9,7 @@ export default {
     page: () => import('modules/qcrud/_pages/admin/crudPage'),
     layout: () => import('layouts/master.vue'),
     title: 'Data Mapping',
-    icon: 'fa-light fa-link',
+    icon: 'fa-light fa-table',
     subHeader: {
       refresh: true,
     }
