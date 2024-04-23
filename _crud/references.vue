@@ -3,17 +3,12 @@
 export default {
   data() {
     return {
-      crudId: this.$uid(),
-      optionsColumnValue: [],
-      optionsUnifiedValue: [],
-      optionsUnifiedValue_Group: [],
-      optionsUnifiedValue_Category: []
+      crudId: this.$uid()
     };
   },
   computed: {
     crudData() {
       const columnName = this.crudInfo.TableColumnName
-      const columnValue = this.crudInfo.TableColumnValue
       const unifiedValue = this.crudInfo.UnifiedValue
 
       const loadOptions = {
@@ -29,15 +24,14 @@ export default {
             }
           }
         } : {},
-        unifiedValue: columnValue ? {
+        unifiedValue: columnName ? {
           loadOptions: {
             apiRoute: 'apiRoutes.qmapper.references',
             select: { label: 'UnifiedValue', id: 'UnifiedValue' },
             requestParams: {
               filter: {
                 _distinct: 'UnifiedValue',
-                TableColumnName: columnName,
-                TableColumnValue: columnValue
+                TableColumnName: columnName
               }
             }
           }
@@ -50,7 +44,6 @@ export default {
               filter: {
                 _distinct: 'UnifiedValue_Group',
                 TableColumnName: columnName,
-                TableColumnValue: columnValue,
                 UnifiedValue: unifiedValue
               }
             }
@@ -64,14 +57,13 @@ export default {
               filter: {
                 _distinct: 'UnifiedValue_Category',
                 TableColumnName: columnName,
-                TableColumnValue: columnValue,
                 UnifiedValue: unifiedValue
               }
             }
           }
         } : {},
       };
-      console.warn(loadOptions)
+
       return {
         crudId: this.crudId,
         entityName: config('main.qmapper.entityNames.references'),
@@ -264,8 +256,7 @@ export default {
               'fill-input': true,
               'hide-selected': true,
               readonly: !this.crudInfo.TableColumnValue,
-              label: 'Unified Value',
-              options: this.optionsUnifiedValue
+              label: 'Unified Value'
             },
             ...loadOptions.unifiedValue
           },
@@ -276,8 +267,7 @@ export default {
               'fill-input': true,
               'hide-selected': true,
               readonly: !this.crudInfo.UnifiedValue,
-              label: 'Unified Value Group',
-              options: this.optionsUnifiedValue_Group
+              label: 'Unified Value Group'
             },
             ...loadOptions.unifiedValueGroup
           },
@@ -288,8 +278,7 @@ export default {
               'fill-input': true,
               'hide-selected': true,
               readonly: !this.crudInfo.UnifiedValue,
-              label: 'Unified Value Category',
-              options: this.optionsUnifiedValue_Category
+              label: 'Unified Value Category'
             },
             ...loadOptions.UnifiedValueCategory
           }
@@ -301,14 +290,6 @@ export default {
                 formData = {
                   ...formData,
                   TableColumnValue: null,
-                  UnifiedValue: null,
-                  UnifiedValue_Group: null,
-                  UnifiedValue_Category: null
-                };
-              }
-              else if(changedFields.includes('TableColumnValue')) {
-                formData = {
-                  ...formData,
                   UnifiedValue: null,
                   UnifiedValue_Group: null,
                   UnifiedValue_Category: null
