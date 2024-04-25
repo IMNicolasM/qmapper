@@ -70,7 +70,24 @@ export default {
         apiRoute: 'apiRoutes.qmapper.references',
         permission: 'imapper.references',
         create: {
-          title: 'Create New Value'
+          title: 'Create New Value',
+          requestParams: {
+            notToSnakeCase: ['UNI_RefID', 'TableColumnName', 'TableColumnValue', 'MatchType','TablePK_EDW', 'UnifiedValue', 'UnifiedValueDesc', 'UnifiedValue_Group', 'UnifiedValue_Category']
+          },
+        },
+        modalActions: {
+          save: {
+            props: {
+              label: 'Send Request',
+              color: 'secondary'
+            }
+          },
+          cancel: {
+            props: {
+              outline: true,
+              color: 'secondary'
+            }
+          }
         },
         read: {
           columns: [
@@ -165,8 +182,7 @@ export default {
               quickFilter: true,
               props: {
                 label: 'Column Name',
-                clearable: true,
-                class: 'col-md-6'
+                clearable: true
               },
               loadOptions: {
                 apiRoute: 'apiRoutes.qmapper.references',
@@ -183,7 +199,14 @@ export default {
         update: {
           title: 'Update Value',
           requestParams: {
-            field: 'UNI_RefID'
+            notToSnakeCase: ['UNI_RefID', 'TableColumnName', 'TableColumnValue', 'MatchType','TablePK_EDW', 'UnifiedValue', 'UnifiedValueDesc', 'UnifiedValue_Group', 'UnifiedValue_Category']
+          },
+          customFormResponse: (criteria, formData, customParams) => {
+            return new Promise((resolve, reject) => {
+              this.$crud.post('apiRoutes.qmapper.references', { attributes: formData })
+                .then(response => resolve(response))
+                .catch(error => reject(error))
+            })
           }
         },
         formLeft: {
@@ -203,13 +226,20 @@ export default {
               requestParams: { filter: { _distinct: 'TableColumnName' } }
             }
           },
-          TablePK_EDW: {
-            value: '',
-            type: 'input',
-            required: true,
+          Division: {
+            value: null,
+            type: 'select',
             props: {
+              label: 'Division',
               readonly: this.crudInfo.typeForm === 'update',
-              label: 'Table PK (EDW)'
+              options: [
+                {label: 'ALL', value: 'ALL'}
+              ]
+            },
+            loadOptions: {
+              apiRoute: 'apiRoutes.qmapper.references',
+              select: { label: 'Division', id: 'Division' },
+              requestParams: { filter: { _distinct: 'Division' } }
             }
           },
           TableColumnValue: {
@@ -219,7 +249,7 @@ export default {
             props: {
               'fill-input': true,
               'hide-selected': true,
-              readonly: (this.crudInfo.typeForm === 'update' || !this.crudInfo.TableColumnName),
+              readonly: !this.crudInfo.TableColumnName,
               label: 'Column value',
               options: [],
             },
