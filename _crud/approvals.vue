@@ -3,6 +3,16 @@
 export default {
   data() {
     return {
+      colors: {
+        REQUESTED: {
+          bg: '#BBC9FE',
+          color: '#3040C2'
+        }
+      },
+      users: {
+        1: 'Reunity Test',
+        2: 'Reunity Admin'
+      },
       crudId: this.$uid()
     };
   },
@@ -30,20 +40,43 @@ export default {
         },
         read: {
           columns: [
-            { name: 'id', label: this.$tr('isite.cms.form.id'), field: 'id', align: 'left' },
+            {
+              name: 'ApprovalInd',
+              label: 'Status',
+              field: 'ApprovalInd',
+              align: 'center',
+              sortable: true,
+              format: (item) => this.getTag(item)
+            },
+            {
+              name: 'RuleCreatedBy',
+              label: 'Requester',
+              field: 'RuleCreatedBy',
+              sortable: true,
+              align: 'center',
+              format: val => this.users[val] || 'NAN'
+            },
             {
               name: 'TableColumnName',
-              label: 'Column name',
+              label: 'Source Column',
               field: 'TableColumnName',
               align: 'rigth',
               sortable: true,
-              action: 'edit'
+              action: 'edit',
+              format: (item) => `<span class="text-primary tw-text-sm tw-font-medium">${item}</span>`
             },
-            { name: 'TablePK_EDW', label: 'Table PK (EDW)', field: 'TablePK_EDW', align: 'left', sortable: true },
             {
-              name: 'TableColumnValue',
-              label: 'Column value',
-              field: 'TableColumnValue',
+              name: 'RuleValue',
+              label: 'Source Value',
+              field: 'RuleValue',
+              sortable: true,
+              align: 'rigth',
+              format: val => val ?? '-'
+            },
+            {
+              name: 'RuleValueDesc',
+              label: 'Source Value Description',
+              field: 'RuleValueDesc',
               sortable: true,
               align: 'rigth',
               format: val => val ?? '-'
@@ -88,184 +121,46 @@ export default {
             },
             { name: 'actions', label: this.$tr('isite.cms.form.actions'), align: 'left' }
           ],
-          filters: {
-            Division: {
-              value: null,
-              type: 'select',
-              quickFilter: true,
-              props: {
-                label: 'Division',
-                clearable: true
-              },
-              loadOptions: {
-                apiRoute: 'apiRoutes.qmapper.references',
-                select: { label: 'Division', id: 'Division' },
-                requestParams: { filter: { _distinct: 'Division' } }
-              }
-            },
-            MappingInd: {
-              value: 'UNMAPPED',
-              type: 'select',
-              quickFilter: true,
-              props: {
-                label: 'Mapping indicator',
-                options: [
-                  { label: 'UNMAPPED', value: 'UNMAPPED' },
-                  { label: 'MAPPED', value: 'MAPPED' }
-                ]
-              }
-            },
-            TableColumnName: {
-              value: null,
-              type: 'select',
-              quickFilter: true,
-              props: {
-                label: 'Column Name',
-                clearable: true
-              },
-              loadOptions: {
-                apiRoute: 'apiRoutes.qmapper.references',
-                select: { label: 'TableColumnName', id: 'TableColumnName' },
-                requestParams: { filter: { _distinct: 'TableColumnName' } }
-              }
-            }
-          },
           requestParams: {
-            notToSnakeCase: ['TableColumnName', 'TableColumnValue', 'TablePK_EDW']
+            notToSnakeCase: ['ApprovalInd', 'TableColumnValue']
           },
-          excludeActions: ['export', 'sync', 'recommendations']
+          excludeActions: ['export', 'sync', 'recommendations'],
+          actions: [
+            {
+              icon: 'fa-regular fa-circle-check',
+              tooltip: 'Approve',
+              action: (item) => {
+                console.warn("Approve: ", item)
+              },
+            },
+            {
+              icon: 'fa-regular fa-ban',
+              tooltip: 'Deny',
+              action: (item) => {
+                console.warn("Deny: ", item)
+              },
+            }
+          ]
         },
-        update: {
-          title: 'Edit Rule',
-          requestParams: {
-            notToSnakeCase: ['UNI_RefID', 'TableColumnName', 'TableColumnValue', 'MatchType','TablePK_EDW', 'UnifiedValue', 'UnifiedValueDesc', 'UnifiedValue_Group', 'UnifiedValue_Category']
-          },
-        },
-        formLeft: {
-          UNI_RefID: { value: '' },
-          TableColumnName: {
-            value: null,
-            type: 'select',
-            required: true,
-            props: {
-              readonly: this.crudInfo.typeForm === 'update',
-              label: 'Column name',
-              clearable: true
-            },
-            loadOptions: {
-              apiRoute: 'apiRoutes.qmapper.references',
-              select: { label: 'TableColumnName', id: 'TableColumnName' },
-              requestParams: { filter: { _distinct: 'TableColumnName' } }
-            }
-          },
-          Division: {
-            value: null,
-            type: 'select',
-            props: {
-              label: 'Division',
-              readonly: this.crudInfo.typeForm === 'update',
-              options: [
-                {label: 'ALL', value: 'ALL'}
-              ]
-            },
-            loadOptions: {
-              apiRoute: 'apiRoutes.qmapper.references',
-              select: { label: 'Division', id: 'Division' },
-              requestParams: { filter: { _distinct: 'Division' } }
-            }
-          },
-          TableColumnValue: {
-            value: null,
-            type: 'select',
-            required: true,
-            props: {
-              'fill-input': true,
-              'hide-selected': true,
-              readonly: !this.crudInfo.TableColumnName,
-              label: 'Column value',
-              options: [],
-            },
-            ...loadOptions.columnValue
-          },
-          'Data owners': {
-            value: '',
-            type: 'input',
-            props: {
-              readonly: true,
-              label: 'Data owners'
-            }
-          }
-        },
-        formRight: {
-          MatchType: {
-            value: 'EXACT',
-            type: 'select',
-            require: true,
-            props: {
-              label: 'Match type*',
-              options: [
-                { label: 'EXACT', value: 'EXACT' },
-                { label: 'PATTERN', value: 'PATTERN' }
-              ],
-              readonly: this.crudInfo.typeForm === 'update'
-            }
-          },
-          UnifiedValue: {
-            value: null,
-            type: 'select',
-            required: true,
-            props: {
-              'fill-input': true,
-              'hide-selected': true,
-              readonly: !this.crudInfo.TableColumnValue,
-              label: 'Unified Value'
-            },
-            ...loadOptions.unifiedValue
-          },
-          UnifiedValue_Group: {
-            value: null,
-            type: 'select',
-            props: {
-              'fill-input': true,
-              'hide-selected': true,
-              readonly: !this.crudInfo.UnifiedValue,
-              label: 'Unified Value Group'
-            },
-            ...loadOptions.unifiedValueGroup
-          },
-          UnifiedValue_Category: {
-            value: null,
-            type: 'select',
-            props: {
-              'fill-input': true,
-              'hide-selected': true,
-              readonly: !this.crudInfo.UnifiedValue,
-              label: 'Unified Value Category'
-            },
-            ...loadOptions.UnifiedValueCategory
-          }
-        },
-        handleFormUpdates: (formData, changedFields, formType) => {
-          return new Promise(resolve => {
-            if (changedFields.length === 1) {
-              if(changedFields.includes('TableColumnName')) {
-                formData = {
-                  ...formData,
-                  TableColumnValue: null,
-                  UnifiedValue: null,
-                  UnifiedValue_Group: null,
-                  UnifiedValue_Category: null
-                };
-              }
-            }
-            resolve(formData);
-          });
-        }
+        update: false,
+        formLeft: {}
       };
     },
     //Crud info
     crudInfo() {
       return this.$store.state.qcrudComponent.component[this.crudId] || {};
+    }
+  },
+  methods: {
+    getTag(item) {
+      if (!item) return '-'
+      const { bg, color } = this.colors[item] || {
+        bg: '#FFF',
+        color: '#000'
+      };
+
+
+      return `<span class="tw-border tw-py-1 tw-px-2 tw-rounded-md tw-font-bold" style="background-color: ${bg}; color: ${color}; font-size: 10px; letter-spacing: 0.4px">${item}</span>`
     }
   }
 };
