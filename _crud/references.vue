@@ -36,6 +36,19 @@ export default {
             }
           }
         } : {},
+        UnifiedValueDesc: unifiedValue ? {
+          loadOptions: {
+            apiRoute: 'apiRoutes.qmapper.references',
+            select: { label: 'UnifiedValueDesc', id: 'UnifiedValueDesc' },
+            requestParams: {
+              filter: {
+                _distinct: 'UnifiedValueDesc',
+                TableColumnName: columnName,
+                UnifiedValue: unifiedValue
+              }
+            }
+          }
+        } : {},
         unifiedValueGroup: unifiedValue ? {
           loadOptions: {
             apiRoute: 'apiRoutes.qmapper.references',
@@ -91,20 +104,26 @@ export default {
         },
         read: {
           columns: [
-            { name: 'id', label: this.$tr('isite.cms.form.id'), field: 'id', align: 'left' },
             {
               name: 'TableColumnName',
-              label: 'Column name',
+              label: 'Source Column',
               field: 'TableColumnName',
               align: 'rigth',
               sortable: true,
               action: 'edit'
             },
-            { name: 'TablePK_EDW', label: 'Table PK (EDW)', field: 'TablePK_EDW', align: 'left', sortable: true },
             {
               name: 'TableColumnValue',
-              label: 'Column value',
+              label: 'Source Value',
               field: 'TableColumnValue',
+              sortable: true,
+              align: 'rigth',
+              format: val => val ?? '-'
+            },
+            {
+              name: 'TableColumnValueDesc',
+              label: 'Source Value Description',
+              field: 'TableColumnValueDesc',
               sortable: true,
               align: 'rigth',
               format: val => val ?? '-'
@@ -113,6 +132,7 @@ export default {
               name: 'MatchType',
               label: 'Match type',
               field: 'MatchType',
+              sortable: true,
               align: 'center',
               format: val => val ?? '-'
             },
@@ -128,6 +148,7 @@ export default {
               name: 'UnifiedValueDesc',
               label: 'Unified Value Desc',
               field: 'UnifiedValueDesc',
+              sortable: true,
               align: 'center',
               format: val => val ?? '-'
             },
@@ -150,18 +171,54 @@ export default {
             { name: 'actions', label: this.$tr('isite.cms.form.actions'), align: 'left' }
           ],
           filters: {
-            Division: {
+            UnifiedValue: {
+              value: null,
+              type: 'select',
+              props: {
+                label: 'Unified Value',
+                clearable: true
+              },
+              ...this.getLoadOption('UnifiedValue')
+            },
+            UnifiedValueDesc: {
+              value: null,
+              type: 'select',
+              props: {
+                label: 'Unified Value Description',
+                clearable: true
+              },
+              ...this.getLoadOption('UnifiedValueDesc')
+            },
+            UnifiedValue_Group: {
+              value: null,
+              type: 'select',
+              props: {
+                label: 'Unified Value Group',
+                clearable: true
+              },
+              ...this.getLoadOption('UnifiedValue_Group')
+            },
+            UnifiedValue_Category: {
+              value: null,
+              type: 'select',
+              props: {
+                label: 'Unified Value Category',
+                clearable: true
+              },
+              ...this.getLoadOption('UnifiedValue_Category')
+            },
+            TableName: {
               value: null,
               type: 'select',
               quickFilter: true,
               props: {
-                label: 'Division',
+                label: 'Subject Area',
                 clearable: true
               },
               loadOptions: {
                 apiRoute: 'apiRoutes.qmapper.references',
-                select: { label: 'Division', id: 'Division' },
-                requestParams: { filter: { _distinct: 'Division' } }
+                select: { label: 'TableName', id: 'TableName' },
+                requestParams: { filter: { _distinct: 'TableName' } }
               }
             },
             MappingInd: {
@@ -176,23 +233,35 @@ export default {
                 ]
               }
             },
-            TableColumnName: {
-              value: null,
+            Division: {
+              value: 'ALL',
               type: 'select',
               quickFilter: true,
               props: {
-                label: 'Column Name',
-                clearable: true
+                label: 'Division'
               },
               loadOptions: {
                 apiRoute: 'apiRoutes.qmapper.references',
-                select: { label: 'TableColumnName', id: 'TableColumnName' },
-                requestParams: { filter: { _distinct: 'TableColumnName' } }
+                select: { label: 'Division', id: 'Division' },
+                requestParams: { filter: { _distinct: 'Division' } }
               }
-            }
+            },
+            SourceSystem: {
+              value: 'ALL',
+              type: 'select',
+              quickFilter: true,
+              props: {
+                label: 'Source Application'
+              },
+              loadOptions: {
+                apiRoute: 'apiRoutes.qmapper.references',
+                select: { label: 'SourceSystem', id: 'SourceSystem' },
+                requestParams: { filter: { _distinct: 'SourceSystem' } }
+              }
+            },
           },
           requestParams: {
-            notToSnakeCase: ['TableColumnName', 'TableColumnValue', 'TablePK_EDW']
+            notToSnakeCase: ['TableColumnName', 'TableColumnValue', 'TableColumnValueDesc', 'MatchType', 'UnifiedValue', 'UnifiedValueDesc', 'UnifiedValue_Group', 'UnifiedValue_Category']
           },
           excludeActions: ['export', 'sync', 'recommendations']
         },
@@ -211,35 +280,19 @@ export default {
         },
         formLeft: {
           UNI_RefID: { value: '' },
-          TableColumnName: {
+          TableColumnName:  {
             value: null,
             type: 'select',
             required: true,
             props: {
               readonly: this.crudInfo.typeForm === 'update',
-              label: 'Column name',
+              label: 'Source Column',
               clearable: true
             },
             loadOptions: {
               apiRoute: 'apiRoutes.qmapper.references',
               select: { label: 'TableColumnName', id: 'TableColumnName' },
               requestParams: { filter: { _distinct: 'TableColumnName' } }
-            }
-          },
-          Division: {
-            value: null,
-            type: 'select',
-            props: {
-              label: 'Division',
-              readonly: this.crudInfo.typeForm === 'update',
-              options: [
-                {label: 'ALL', value: 'ALL'}
-              ]
-            },
-            loadOptions: {
-              apiRoute: 'apiRoutes.qmapper.references',
-              select: { label: 'Division', id: 'Division' },
-              requestParams: { filter: { _distinct: 'Division' } }
             }
           },
           TableColumnValue: {
@@ -249,22 +302,21 @@ export default {
             props: {
               'fill-input': true,
               'hide-selected': true,
-              readonly: !this.crudInfo.TableColumnName,
-              label: 'Column value',
+              readonly: this.crudInfo.typeForm === 'update',
+              label: 'Source Value',
               options: [],
             },
             ...loadOptions.columnValue
           },
-          'Data owners': {
+          TableColumnValueDesc: {
             value: '',
             type: 'input',
+            required: true,
             props: {
-              readonly: true,
-              label: 'Data owners'
+              readonly: this.crudInfo.typeForm === 'update',
+              label: 'Source Value Description',
             }
-          }
-        },
-        formRight: {
+          },
           MatchType: {
             value: 'EXACT',
             type: 'select',
@@ -272,12 +324,13 @@ export default {
             props: {
               label: 'Match type*',
               options: [
-                { label: 'EXACT', value: 'EXACT' },
-                { label: 'PATTERN', value: 'PATTERN' }
-              ],
-              readonly: this.crudInfo.typeForm === 'update'
+                { label: 'Exact Match', value: 'EXACT' },
+                // { label: 'PATTERN', value: 'PATTERN' }
+              ]
             }
-          },
+          }
+        },
+        formRight: {
           UnifiedValue: {
             value: null,
             type: 'select',
@@ -285,10 +338,20 @@ export default {
             props: {
               'fill-input': true,
               'hide-selected': true,
-              readonly: !this.crudInfo.TableColumnValue,
               label: 'Unified Value'
             },
             ...loadOptions.unifiedValue
+          },
+          UnifiedValueDesc: {
+            value: null,
+            type: 'select',
+            required: true,
+            props: {
+              'fill-input': true,
+              'hide-selected': true,
+              label: 'Unified Value Description'
+            },
+            ...loadOptions.UnifiedValueDesc
           },
           UnifiedValue_Group: {
             value: null,
@@ -296,7 +359,6 @@ export default {
             props: {
               'fill-input': true,
               'hide-selected': true,
-              readonly: !this.crudInfo.UnifiedValue,
               label: 'Unified Value Group'
             },
             ...loadOptions.unifiedValueGroup
@@ -307,7 +369,6 @@ export default {
             props: {
               'fill-input': true,
               'hide-selected': true,
-              readonly: !this.crudInfo.UnifiedValue,
               label: 'Unified Value Category'
             },
             ...loadOptions.UnifiedValueCategory
@@ -334,6 +395,21 @@ export default {
     //Crud info
     crudInfo() {
       return this.$store.state.qcrudComponent.component[this.crudId] || {};
+    }
+  },
+  methods: {
+    getLoadOption(name) {
+      return {
+        loadOptions: {
+          apiRoute: 'apiRoutes.qmapper.references',
+          select: { label: name, id: name },
+          requestParams: {
+            filter: {
+              _distinct: name,
+            }
+          }
+        }
+      }
     }
   }
 };
