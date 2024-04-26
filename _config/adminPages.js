@@ -14,4 +14,19 @@ export default {
       refresh: true,
     }
   },
+  approvals: {
+    permission: 'imapper.approvals.manage',
+    activated: true,
+    authenticated: true,
+    path: '/mapper/approvals',
+    name: 'qmapper.admin.approvals',
+    crud : import('modules/qmapper/_crud/approvals'),
+    page: () => import('modules/qcrud/_pages/admin/crudPage'),
+    layout: () => import('layouts/master.vue'),
+    title: 'Approvals',
+    icon: 'fa-regular fa-circle-check',
+    subHeader: {
+      refresh: true,
+    }
+  },
 }

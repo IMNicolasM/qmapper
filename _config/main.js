@@ -3,5 +3,6 @@ export default {
   //Entities
   entityNames: {
     references: 'references',
+    approvals: 'approvals'
   },
 }
