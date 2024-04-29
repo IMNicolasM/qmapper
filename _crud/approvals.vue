@@ -68,63 +68,63 @@ export default {
               name: 'TableColumnName',
               label: 'Source Column',
               field: 'TableColumnName',
-              align: 'rigth',
+              align: 'center',
               sortable: true,
               action: 'edit'
             },
             {
               name: 'RuleValue',
               label: 'Source Value',
-              field: 'RuleValue',
+              field: row => row,
               sortable: true,
-              align: 'rigth',
-              format: val => val ?? '-'
+              align: 'center',
+              format: (val) => this.formatRowDiff(val, 'RuleValue', 'refTableColumnValue')
             },
             {
               name: 'RuleValueDesc',
               label: 'Source Value Description',
-              field: 'RuleValueDesc',
+              field: row => row,
               sortable: true,
-              align: 'rigth',
-              format: val => val ?? '-'
+              align: 'center',
+              format: (val) => this.formatRowDiff(val, 'RuleValueDesc', 'refTableColumnValueDesc')
             },
             {
               name: 'MatchType',
               label: 'Match type',
-              field: 'MatchType',
+              field: row => row,
               align: 'center',
-              format: val => val ?? '-'
+              format: (val) => this.formatRowDiff(val, 'MatchType')
             },
             {
               name: 'UnifiedValue',
               label: 'Unified Value',
-              field: 'UnifiedValue',
+              field: row => row,
               sortable: true,
               align: 'center',
-              format: val => val ?? '-'
+              format: (val) => this.formatRowDiff(val, 'UnifiedValue')
             },
             {
               name: 'UnifiedValueDesc',
               label: 'Unified Value Desc',
-              field: 'UnifiedValueDesc',
+              field: row => row,
               align: 'center',
-              format: val => val ?? '-'
+              format: (val) => this.formatRowDiff(val, 'UnifiedValueDesc')
             },
             {
               name: 'UnifiedValue_Group',
               label: 'Unified Value Group',
-              field: 'UnifiedValue_Group',
+              field: row => row,
               sortable: true,
               align: 'center',
-              format: val => val ?? '-'
+              format: (val) => this.formatRowDiff(val, 'UnifiedValue_Group')
             },
             {
               name: 'UnifiedValue_Category',
               label: 'Unified Value Category',
-              field: 'UnifiedValue_Category',
+              field: row => row,
               sortable: true,
               align: 'center',
-              format: val => val ?? '-'
+              format: (val) => this.formatRowDiff(val, 'UnifiedValue_Category')
             },
             { name: 'actions', label: this.$tr('isite.cms.form.actions'), align: 'left' }
           ],
@@ -136,6 +136,7 @@ export default {
           actions: [
             {
               icon: 'fa-regular fa-circle-check',
+              vIf: this.$hasAccess('imapper.approvals.acceptance'),
               tooltip: 'Approve',
               action: (item) => {
                 console.warn("Approve: ", item)
@@ -143,6 +144,7 @@ export default {
             },
             {
               icon: 'fa-regular fa-ban',
+              vIf: this.$hasAccess('imapper.approvals.acceptance'),
               tooltip: 'Deny',
               action: (item) => {
                 console.warn("Deny: ", item)
@@ -169,7 +171,32 @@ export default {
 
 
       return `<span class="tw-border tw-py-0.5 tw-px-2 tw-rounded-md tw-font-bold" style="background-color: ${bg}; color: ${color}; font-size: 10px;">${item}</span>`
-    }
+    },
+    formatRowDiff(row, column, diffColumn = '', columnColor = 'ApprovalInd') {
+      if (!row || !column) return '-'
+
+      let columnToCompare = diffColumn;
+
+      if(!diffColumn?.length) columnToCompare = `ref${column}`
+      let compareValue = row[column]
+      let diffValue = row[columnToCompare]
+
+      const { color } = this.colors[row[columnColor]] || {
+        color: '#156DAC'
+      };
+
+      if(compareValue == null) compareValue = String(compareValue).toUpperCase()
+      if(diffValue == null) diffValue = String(diffValue).toUpperCase()
+
+      const textColor = `tw-text-[${color}]`
+
+      return `<div class="tw-py-0.5 tw-px-1" style="font-size: 13px;">
+<span class="tw-text-[#666] tw-line-through">${diffValue}</span>
+<br />
+<span class="${textColor} tw-font-semibold">${compareValue}</span>
+</div>`
+    },
+
   }
 };
 </script>
