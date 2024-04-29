@@ -262,7 +262,11 @@ export default {
             },
           },
           requestParams: {
+            include: 'requestApproval',
             notToSnakeCase: ['TableColumnName', 'TableColumnValue', 'TableColumnValueDesc', 'MatchType', 'UnifiedValue', 'UnifiedValueDesc', 'UnifiedValue_Group', 'UnifiedValue_Category']
+          },
+          disabled: {
+            row: (item) => item?.countRequest > 0
           },
           excludeActions: ['export', 'sync', 'recommendations']
         },

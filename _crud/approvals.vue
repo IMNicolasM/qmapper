@@ -7,6 +7,14 @@ export default {
         REQUESTED: {
           bg: '#BBC9FE',
           color: '#3040C2'
+        },
+        DENIED: {
+          bg: '#FCE0DF',
+          color: '#881915'
+        },
+        APPROVED: {
+          bg: '#D6EEE0',
+          color: '#185340'
         }
       },
       users: {
@@ -62,8 +70,7 @@ export default {
               field: 'TableColumnName',
               align: 'rigth',
               sortable: true,
-              action: 'edit',
-              format: (item) => `<span class="text-primary tw-text-sm tw-font-medium">${item}</span>`
+              action: 'edit'
             },
             {
               name: 'RuleValue',
@@ -122,6 +129,7 @@ export default {
             { name: 'actions', label: this.$tr('isite.cms.form.actions'), align: 'left' }
           ],
           requestParams: {
+            include: 'reference',
             notToSnakeCase: ['ApprovalInd', 'TableColumnValue']
           },
           excludeActions: ['export', 'sync', 'recommendations'],
@@ -155,12 +163,12 @@ export default {
     getTag(item) {
       if (!item) return '-'
       const { bg, color } = this.colors[item] || {
-        bg: '#FFF',
-        color: '#000'
+        bg: '#B1E2FA',
+        color: '#156DAC'
       };
 
 
-      return `<span class="tw-border tw-py-1 tw-px-2 tw-rounded-md tw-font-bold" style="background-color: ${bg}; color: ${color}; font-size: 10px; letter-spacing: 0.4px">${item}</span>`
+      return `<span class="tw-border tw-py-0.5 tw-px-2 tw-rounded-md tw-font-bold" style="background-color: ${bg}; color: ${color}; font-size: 10px;">${item}</span>`
     }
   }
 };
