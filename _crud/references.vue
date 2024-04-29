@@ -87,6 +87,7 @@ export default {
           requestParams: {
             notToSnakeCase: ['UNI_RefID', 'TableColumnName', 'TableColumnValue', 'MatchType','TablePK_EDW', 'UnifiedValue', 'UnifiedValueDesc', 'UnifiedValue_Group', 'UnifiedValue_Category']
           },
+          useSystemMessage: true
         },
         modalActions: {
           save: {
@@ -268,18 +269,23 @@ export default {
         update: {
           title: 'Update Value',
           requestParams: {
-            notToSnakeCase: ['UNI_RefID', 'TableColumnName', 'TableColumnValue', 'MatchType','TablePK_EDW', 'UnifiedValue', 'UnifiedValueDesc', 'UnifiedValue_Group', 'UnifiedValue_Category']
+            notToSnakeCase: ['UNI_RefID', 'UNI_RuleID', 'TableColumnName', 'TableColumnValue', 'MatchType','TablePK_EDW', 'UnifiedValue', 'UnifiedValueDesc', 'UnifiedValue_Group', 'UnifiedValue_Category']
           },
           customFormResponse: (criteria, formData, customParams) => {
             return new Promise((resolve, reject) => {
               this.$crud.post('apiRoutes.qmapper.references', { attributes: formData })
-                .then(response => resolve(response))
-                .catch(error => reject(error))
+                .then(response => resolve(response.data))
+                .catch(error => {
+                  console.warn(error)
+                  reject(error.response?.data?.message)
+                })
             })
-          }
+          },
+          useSystemMessage: true
         },
         formLeft: {
           UNI_RefID: { value: '' },
+          UNI_RuleID: { value: '' },
           TableColumnName:  {
             value: null,
             type: 'select',
