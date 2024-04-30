@@ -1,26 +1,9 @@
 <template></template>
 <script>
+import {TEST_USERS as users, TAG_COLORS } from 'src/modules/qmapper/_pages/admin/approval/constant'
 export default {
   data() {
     return {
-      colors: {
-        REQUESTED: {
-          bg: '#BBC9FE',
-          color: '#3040C2'
-        },
-        DENIED: {
-          bg: '#FCE0DF',
-          color: '#881915'
-        },
-        APPROVED: {
-          bg: '#D6EEE0',
-          color: '#185340'
-        }
-      },
-      users: {
-        1: 'Reunity Test',
-        2: 'Reunity Admin'
-      },
       crudId: this.$uid()
     };
   },
@@ -62,7 +45,7 @@ export default {
               field: 'RuleCreatedBy',
               sortable: true,
               align: 'center',
-              format: val => this.users[val] || 'NAN'
+              format: val => users[val] || 'NAN'
             },
             {
               name: 'TableColumnName',
@@ -147,7 +130,7 @@ export default {
     //Tag to show status
     getTag(item) {
       if (!item) return '-'
-      const { bg, color } = this.colors[item] || {
+      const { bg, color } = TAG_COLORS[item] || {
         bg: '#B1E2FA',
         color: '#156DAC'
       };
@@ -165,7 +148,7 @@ export default {
       let compareValue = row[column]
       let diffValue = row[columnToCompare]
 
-      const { color } = this.colors[row[columnColor]] || {
+      const { color } = TAG_COLORS[row[columnColor]] || {
         color: '#156DAC'
       };
 
