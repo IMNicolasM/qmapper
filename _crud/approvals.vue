@@ -21,7 +21,11 @@ export default {
         1: 'Reunity Test',
         2: 'Reunity Admin'
       },
-      crudId: this.$uid()
+      crudId: this.$uid(),
+      actions: {
+        1: 'APPROVED',
+        2: 'DENIED'
+      }
     };
   },
   computed: {
@@ -138,17 +142,13 @@ export default {
               icon: 'fa-regular fa-circle-check',
               vIf: this.$hasAccess('imapper.approvals.acceptance'),
               tooltip: 'Approve',
-              action: (item) => {
-                console.warn("Approve: ", item)
-              },
+              action: (item) => this.sendAction(this.actions[1], item),
             },
             {
               icon: 'fa-regular fa-ban',
               vIf: this.$hasAccess('imapper.approvals.acceptance'),
               tooltip: 'Deny',
-              action: (item) => {
-                console.warn("Deny: ", item)
-              },
+              action: (item) => this.sendAction(this.actions[2], item),
             }
           ]
         },
@@ -162,6 +162,7 @@ export default {
     }
   },
   methods: {
+    //Tag to show status
     getTag(item) {
       if (!item) return '-'
       const { bg, color } = this.colors[item] || {
@@ -172,6 +173,7 @@ export default {
 
       return `<span class="tw-border tw-py-0.5 tw-px-2 tw-rounded-md tw-font-bold" style="background-color: ${bg}; color: ${color}; font-size: 10px;">${item}</span>`
     },
+    //Compare style of column
     formatRowDiff(row, column, diffColumn = '', columnColor = 'ApprovalInd') {
       if (!row || !column) return '-'
 
@@ -188,15 +190,21 @@ export default {
       if(compareValue == null) compareValue = String(compareValue).toUpperCase()
       if(diffValue == null) diffValue = String(diffValue).toUpperCase()
 
-      const textColor = `tw-text-[${color}]`
-
       return `<div class="tw-py-0.5 tw-px-1" style="font-size: 13px;">
 <span class="tw-text-[#666] tw-line-through">${diffValue}</span>
 <br />
-<span class="${textColor} tw-font-semibold">${compareValue}</span>
+<span class="tw-font-semibold" style="color: ${color};">${compareValue}</span>
 </div>`
     },
+    //Send action
+    async sendAction(action, attributes) {
+      await this.$crud.post(`${config('apiRoutes.qmapper.approvals')}/action`, {
+        action,
+        attributes
+      }).then(response => {
 
+      }).catch(err => console.warn("Error", err))
+    }
   }
 };
 </script>
