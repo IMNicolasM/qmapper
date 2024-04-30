@@ -21,11 +21,7 @@ export default {
         1: 'Reunity Test',
         2: 'Reunity Admin'
       },
-      crudId: this.$uid(),
-      actions: {
-        1: 'APPROVED',
-        2: 'DENIED'
-      }
+      crudId: this.$uid()
     };
   },
   computed: {
@@ -136,21 +132,7 @@ export default {
             include: 'reference',
             notToSnakeCase: ['ApprovalInd', 'TableColumnValue']
           },
-          excludeActions: ['export', 'sync', 'recommendations'],
-          actions: [
-            {
-              icon: 'fa-regular fa-circle-check',
-              vIf: this.$hasAccess('imapper.approvals.acceptance'),
-              tooltip: 'Approve',
-              action: (item) => this.sendAction(this.actions[1], item),
-            },
-            {
-              icon: 'fa-regular fa-ban',
-              vIf: this.$hasAccess('imapper.approvals.acceptance'),
-              tooltip: 'Deny',
-              action: (item) => this.sendAction(this.actions[2], item),
-            }
-          ]
+          excludeActions: ['export', 'sync', 'recommendations']
         },
         update: false,
         formLeft: {}
@@ -195,15 +177,6 @@ export default {
 <br />
 <span class="tw-font-semibold" style="color: ${color};">${compareValue}</span>
 </div>`
-    },
-    //Send action
-    async sendAction(action, attributes) {
-      await this.$crud.post(`${config('apiRoutes.qmapper.approvals')}/action`, {
-        action,
-        attributes
-      }).then(response => {
-
-      }).catch(err => console.warn("Error", err))
     }
   }
 };
