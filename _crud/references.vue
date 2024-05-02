@@ -239,7 +239,10 @@ export default {
               type: 'select',
               quickFilter: true,
               props: {
-                label: 'Division'
+                label: 'Division',
+                options: [
+                  { label: 'ALL', value: 'ALL' }
+                ]
               },
               loadOptions: {
                 apiRoute: 'apiRoutes.qmapper.references',
@@ -252,7 +255,10 @@ export default {
               type: 'select',
               quickFilter: true,
               props: {
-                label: 'Source Application'
+                label: 'Source Application',
+                options: [
+                  { label: 'ALL', value: 'ALL' }
+                ]
               },
               loadOptions: {
                 apiRoute: 'apiRoutes.qmapper.references',
@@ -273,17 +279,7 @@ export default {
         update: {
           title: 'Update Value',
           requestParams: {
-            notToSnakeCase: ['UNI_RefID', 'UNI_RuleID', 'TableColumnName', 'TableColumnValue', 'MatchType','TablePK_EDW', 'UnifiedValue', 'UnifiedValueDesc', 'UnifiedValue_Group', 'UnifiedValue_Category']
-          },
-          customFormResponse: (criteria, formData, customParams) => {
-            return new Promise((resolve, reject) => {
-              this.$crud.post('apiRoutes.qmapper.references', { attributes: formData })
-                .then(response => resolve(response.data))
-                .catch(error => {
-                  console.warn(error)
-                  reject(error.response?.data?.message)
-                })
-            })
+            notToSnakeCase: ['UNI_RefID', 'UNI_RuleID', 'TableColumnName', 'TableColumnValue', 'TableColumnValueDesc', 'MatchType','TablePK_EDW', 'UnifiedValue', 'UnifiedValueDesc', 'UnifiedValue_Group', 'UnifiedValue_Category']
           },
           useSystemMessage: true
         },
