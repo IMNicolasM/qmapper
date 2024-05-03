@@ -279,7 +279,7 @@ export default {
         update: {
           title: 'Update Value',
           requestParams: {
-            notToSnakeCase: ['UNI_RefID', 'UNI_RuleID', 'TableColumnName', 'TableColumnValue', 'TableColumnValueDesc', 'MatchType','TablePK_EDW', 'UnifiedValue', 'UnifiedValueDesc', 'UnifiedValue_Group', 'UnifiedValue_Category']
+            notToSnakeCase: ['UNI_RefID', 'UNI_RuleID', 'TableColumnName', 'TableColumnValue', 'TableColumnValueDesc', 'MatchType','UnifiedValue', 'UnifiedValueDesc', 'UnifiedValue_Group', 'UnifiedValue_Category']
           },
           useSystemMessage: true
         },

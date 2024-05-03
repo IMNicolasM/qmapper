@@ -113,9 +113,9 @@ export default {
           ],
           requestParams: {
             include: 'reference',
-            notToSnakeCase: ['ApprovalInd', 'TableColumnValue']
+            notToSnakeCase: ['ApprovalInd', 'RuleCreatedBy', 'TableColumnName', 'RuleValue', 'RuleValueDesc', 'MatchType','UnifiedValue', 'UnifiedValueDesc', 'UnifiedValue_Group', 'UnifiedValue_Category']
           },
-          excludeActions: ['export', 'sync', 'recommendations']
+          excludeActions: ['export', 'sync', 'recommendations'],
         },
         update: false,
         formLeft: {}

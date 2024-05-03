@@ -34,21 +34,41 @@ export default function controller() {
               icon: 'fa-regular fa-circle-check',
               vIf: store.hasAccess('imapper.approvals.acceptance'),
               tooltip: 'Approve',
+              name: 'approve',
               action: (item: any) => methods.showModal(state.actions[1], item)
             },
             {
               icon: 'fa-regular fa-ban',
               vIf: store.hasAccess('imapper.approvals.acceptance'),
               tooltip: 'Deny',
+              name: 'deny',
               action: (item) => methods.showModal(state.actions[2], item)
             }
-          ]
+          ],
+          filters: {
+            ApprovalInd: {
+              value: 'REQUESTED',
+              type: 'select',
+              quickFilter: true,
+              props: {
+                label: 'Mapping indicator',
+                options: [
+                  { label: 'REQUESTED', value: 'REQUESTED' },
+                  { label: 'DENIED', value: 'DENIED' },
+                  { label: 'APPROVED', value: 'APPROVED' }
+                ]
+              }
+            }
+          },
+          disabled: {
+            action: (item) => item.ApprovalInd ? item.ApprovalInd !== 'REQUESTED' : false
+          }
         }
       };
     }),
     modalActions: computed(() => {
-      const action = state.currentAction
-      const color = action == 'DENIED' ? 'negative' : 'secondary'
+      const action = state.currentAction;
+      const color = action == 'DENIED' ? 'negative' : 'secondary';
       return [
         {
           props: {
@@ -60,11 +80,11 @@ export default function controller() {
         },
         {
           props: {
-            label: state.currentAction,
+            label: action == 'DENIED' ? 'Deny' : 'Approve',
             color
           },
           action: () => {
-            methods.sendAction(action, state.attributes)
+            methods.sendAction(action, state.attributes);
           }
         }
       ];
@@ -78,7 +98,7 @@ export default function controller() {
           rows: '3'
         }
       };
-    }),
+    })
   };
 
   // Methods
@@ -86,11 +106,11 @@ export default function controller() {
     //Send action
     async sendAction(action: any, att: any) {
       try {
-        state.show = false
+        state.show = false;
         const attributes = {
           ...att,
           RejectionComments: state.comment
-        }
+        };
         await services.sendActionRuleApprove({ action, attributes });
         await methods.getDataTable(true);
       } catch (e) {
@@ -103,7 +123,7 @@ export default function controller() {
     showModal(action: string, item: any) {
       state.show = true;
       state.currentAction = action;
-      state.attributes = item
+      state.attributes = item;
     }
   };
 

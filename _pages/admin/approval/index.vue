@@ -2,11 +2,12 @@
   <div>
     <master-modal
       v-model="show"
-      :title="currentAction ? `Are you certain you ${currentAction.toLowerCase()} this request?` : ''"
+      title="Are You Sure?"
       :actions="modalActions"
     >
       <div v-if="!!currentAction">
-        <p>Please provide the reason for your decision to {{ currentAction.toLowerCase() }} this request.</p>
+        <p>Before confirming, would you like to leave a comment to explain your choice?</p>
+        <br />
           <dynamic-field
             v-model="comment"
             :field="fieldComment"
