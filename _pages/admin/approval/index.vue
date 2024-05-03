@@ -2,11 +2,11 @@
   <div>
     <master-modal
       v-model="show"
-      title="Are You Sure?"
+      title="Action Confirmation"
       :actions="modalActions"
     >
       <div v-if="!!currentAction">
-        <p>Before confirming, would you like to leave a comment to explain your choice?</p>
+        <p>Before proceeding, would you like to include a rationale for your decision?</p>
         <br />
           <dynamic-field
             v-model="comment"

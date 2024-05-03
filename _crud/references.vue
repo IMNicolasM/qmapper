@@ -281,6 +281,13 @@ export default {
           requestParams: {
             notToSnakeCase: ['UNI_RefID', 'UNI_RuleID', 'TableColumnName', 'TableColumnValue', 'TableColumnValueDesc', 'MatchType','UnifiedValue', 'UnifiedValueDesc', 'UnifiedValue_Group', 'UnifiedValue_Category']
           },
+          customFormResponse: (criteria, formData, customParams) => {
+            return new Promise((resolve, reject) => {
+              this.$crud.post('apiRoutes.qmapper.references', { attributes: formData })
+                .then(response => resolve(response))
+                .catch(error => reject(error?.response?.data?.errors || {}))
+            })
+          },
           useSystemMessage: true
         },
         formLeft: {
