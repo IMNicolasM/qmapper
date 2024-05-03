@@ -68,20 +68,23 @@ export default function controller() {
     }),
     modalActions: computed(() => {
       const action = state.currentAction;
-      const color = action == 'DENIED' ? 'negative' : 'secondary';
+      const color = action == 'DENIED' ? '#C42C27' : '#49C185';
+      const classColor = `background-color: ${color}`
+
       return [
         {
           props: {
             label: i18n.tr('isite.cms.label.cancel'),
-            outline: true,
-            color: 'secondary'
+            color: 'grey-4',
+            textColor: "grey-9"
           },
           action: () => state.show = false
         },
         {
           props: {
             label: action == 'DENIED' ? 'Deny' : 'Approve',
-            color
+            style: classColor,
+            textColor: "white"
           },
           action: () => {
             methods.sendAction(action, state.attributes);
@@ -95,7 +98,8 @@ export default function controller() {
         type: 'input',
         props: {
           type: 'textarea',
-          rows: '3'
+          rows: '3',
+          label: 'Leave a note'
         }
       };
     })
