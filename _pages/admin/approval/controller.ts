@@ -18,7 +18,8 @@ export default function controller() {
     requested: {},
     actions: {
       1: 'APPROVED',
-      2: 'DENIED'
+      2: 'DENIED',
+      3: 'CANCELLED'
     },
     comment: '',
     attributes: {}
@@ -43,6 +44,13 @@ export default function controller() {
               tooltip: 'Deny',
               name: 'deny',
               action: (item) => methods.showModal(state.actions[2], item)
+            },
+            {
+              icon: 'fa-regular fa-ban',
+              vIf: store.hasAccess('imapper.approvals.cancel'),
+              tooltip: 'Cancel',
+              name: 'cancel',
+              action: (item) => methods.showModal(state.actions[3], item)
             }
           ],
           filters: {
@@ -55,7 +63,8 @@ export default function controller() {
                 options: [
                   { label: 'REQUESTED', value: 'REQUESTED' },
                   { label: 'DENIED', value: 'DENIED' },
-                  { label: 'APPROVED', value: 'APPROVED' }
+                  { label: 'APPROVED', value: 'APPROVED' },
+                  { label: 'CANCELLED', value: 'CANCELLED' },
                 ]
               }
             }
@@ -67,9 +76,22 @@ export default function controller() {
       };
     }),
     modalActions: computed(() => {
-      const action = state.currentAction;
-      const color = action == 'DENIED' ? '#C42C27' : '#49C185';
-      const classColor = `background-color: ${color}`
+      const actions = {
+        'APPROVED': {
+          label: 'Approve',
+          color: '#49C185'
+        },
+        'DENIED': {
+          label: 'Deny',
+          color: '#C42C27'
+        },
+        'CANCEL': {
+          label: 'Cancel',
+          color: '#C42C27'
+        },
+      };
+
+      const currentAction = actions[state.currentAction] || { color: 'gray', label: 'None'};
 
       return [
         {
@@ -82,12 +104,12 @@ export default function controller() {
         },
         {
           props: {
-            label: action == 'DENIED' ? 'Deny' : 'Approve',
-            style: classColor,
+            label: currentAction.label,
+            style: `background-color: ${currentAction.color}`,
             textColor: "white"
           },
           action: () => {
-            methods.sendAction(action, state.attributes);
+            methods.sendAction(state.currentAction, state.attributes);
           }
         }
       ];

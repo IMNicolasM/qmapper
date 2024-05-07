@@ -10,6 +10,10 @@ export const TAG_COLORS = {
   APPROVED: {
     bg: '#D6EEE0',
     color: '#185340'
+  },
+  CANCELLED: {
+    bg: '#E8EBEE',
+    color: '#496D8B'
   }
 };
 export const TEST_USERS = {
