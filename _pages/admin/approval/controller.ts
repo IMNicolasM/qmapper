@@ -87,7 +87,7 @@ export default function controller() {
           color: '#C42C27'
         },
         'CANCELLED': {
-          label: 'Cancel',
+          label: 'Cancel Request',
           color: '#C42C27'
         },
       };
