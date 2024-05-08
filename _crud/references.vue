@@ -1,7 +1,5 @@
 <template></template>
 <script>
-import { store } from '../../../plugins/utils';
-
 export default {
   data() {
     return {
@@ -94,7 +92,7 @@ export default {
         modalActions: {
           save: {
             props: {
-              label: this.$hasAccess('imapper.approvals.edit') ? 'Save' : 'Send Request',
+              label: 'Send Request',
               color: 'secondary'
             }
           },
@@ -219,9 +217,8 @@ export default {
                 clearable: true
               },
               loadOptions: {
-                apiRoute: 'apiRoutes.qmapper.references',
-                select: { label: 'TableName', id: 'TableName' },
-                requestParams: { filter: { _distinct: 'TableName' } }
+                apiRoute: 'apiRoutes.qmapper.metadata',
+                select: { label: 'SubjectArea', id: 'TableName' }
               }
             },
             MappingInd: {
@@ -263,7 +260,7 @@ export default {
                 ]
               },
               loadOptions: {
-                apiRoute: 'apiRoutes.qmapper.references',
+                apiRoute: 'apiRoutes.qmapper.metadata',
                 select: { label: 'SourceSystem', id: 'SourceSystem' },
                 requestParams: { filter: { _distinct: 'SourceSystem' } }
               }

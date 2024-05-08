@@ -7,5 +7,6 @@ export default {
   urlBase : urlBase,
   version: moduleVersion,
   references: `${urlBase}/references`,
+  metadata: `${urlBase}/metadata`,
   approvals: `${urlBase}/approvals`
 }
