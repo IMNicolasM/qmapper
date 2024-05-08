@@ -208,6 +208,13 @@ export default {
               },
               ...this.getLoadOption('UnifiedValue_Category')
             },
+            countRequest: {
+              value: 0,
+              type: 'checkbox',
+              props: {
+                label: 'Pending Approvals',
+              }
+            },
             TableName: {
               value: null,
               type: 'select',
@@ -278,7 +285,7 @@ export default {
         update: {
           title: 'Update Value',
           requestParams: {
-            notToSnakeCase: ['UNI_RefID', 'UNI_RuleID', 'TableColumnName', 'TableColumnValue', 'TableColumnValueDesc', 'MatchType','UnifiedValue', 'UnifiedValueDesc', 'UnifiedValue_Group', 'UnifiedValue_Category']
+            notToSnakeCase: ['UNI_RefID', 'UNI_RuleID', 'Division', 'TableColumnName', 'TableColumnValue', 'TableColumnValueDesc', 'MatchType','UnifiedValue', 'UnifiedValueDesc', 'UnifiedValue_Group', 'UnifiedValue_Category']
           },
           customFormResponse: (criteria, formData, customParams) => {
             return new Promise((resolve, reject) => {
@@ -292,6 +299,7 @@ export default {
         formLeft: {
           UNI_RefID: { value: '' },
           UNI_RuleID: { value: '' },
+          Division: { value: 'ALL' },
           TableColumnName:  {
             value: null,
             type: 'select',

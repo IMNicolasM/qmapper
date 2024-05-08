@@ -36,7 +36,7 @@ export default {
             {
               name: 'ApprovalInd',
               label: 'Status',
-              field: 'ApprovalInd',
+              field: row => row,
               align: 'center',
               sortable: true,
               format: (item) => this.getTag(item)
@@ -145,7 +145,10 @@ export default {
             value: null,
             type: 'select',
             props: {
-              label: 'Division'
+              label: 'Division',
+              options: [
+                { label: 'ALL', value: 'ALL' }
+              ]
             },
             ...this.getLoadOption('Division')
           },
@@ -319,14 +322,15 @@ export default {
   methods: {
     //Tag to show status
     getTag(item) {
-      if (!item) return '-';
-      const { bg, color } = TAG_COLORS[item] || {
+      const ind = item.ApprovalInd;
+      if (!ind) return '-';
+      const { bg, color } = TAG_COLORS[ind] || {
         bg: '#B1E2FA',
         color: '#156DAC'
       };
 
-
-      return `<span class="tw-border tw-py-0.5 tw-px-2 tw-rounded-md tw-font-bold" style="background-color: ${bg}; color: ${color}; font-size: 10px;">${item}</span>`;
+      // <i className="fa-solid fa-comment-dots"></i>
+      return `<span class="tw-border tw-py-0.5 tw-px-2 tw-rounded-md tw-font-bold" style="background-color: ${bg}; color: ${color}; font-size: 10px;">${ind}</span>`;
     },
     //Compare style of column
     formatRowDiff(row, column, diffColumn = '', columnColor = 'ApprovalInd') {

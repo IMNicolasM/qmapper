@@ -17,6 +17,6 @@ export const TAG_COLORS = {
   }
 };
 export const TEST_USERS = {
-  1: 'Reunity Test',
-  2: 'Reunity Admin'
+  2: 'Reunity Test',
+  1: 'Reunity Admin'
 };

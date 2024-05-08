@@ -154,6 +154,11 @@ export default function controller() {
       state.show = true;
       state.currentAction = action;
       state.attributes = item;
+    },
+    clear() {
+      state.comment = '';
+      state.currentAction = '';
+      state.attributes = {};
     }
   };
 

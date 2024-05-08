@@ -4,6 +4,7 @@
       v-model="show"
       id="masterModalAction"
       :actions="modalActions"
+      @hide="clear"
     >
       <div v-if="!!currentAction">
         <h3 class="content__title">Action Confirmation</h3>
