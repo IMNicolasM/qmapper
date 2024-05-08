@@ -54,22 +54,6 @@ export default function controller() {
               action: (item) => methods.showModal(state.actions[3], item)
             }
           ],
-          filters: {
-            ApprovalInd: {
-              value: 'REQUESTED',
-              type: 'select',
-              quickFilter: true,
-              props: {
-                label: 'Mapping indicator',
-                options: [
-                  { label: 'REQUESTED', value: 'REQUESTED' },
-                  { label: 'DENIED', value: 'DENIED' },
-                  { label: 'APPROVED', value: 'APPROVED' },
-                  { label: 'CANCELLED', value: 'CANCELLED' },
-                ]
-              }
-            }
-          },
           disabled: {
             action: (item) => item.ApprovalInd ? item.ApprovalInd !== 'REQUESTED' : false
           }

@@ -113,6 +113,103 @@ export default {
             },
             { name: 'actions', label: this.$tr('isite.cms.form.actions'), align: 'left' }
           ],
+          filters: {
+            UnifiedValue: {
+              value: null,
+              type: 'select',
+              props: {
+                label: 'Unified Value',
+                clearable: true
+              },
+              ...this.getLoadOption('UnifiedValue')
+            },
+            UnifiedValueDesc: {
+              value: null,
+              type: 'select',
+              props: {
+                label: 'Unified Value Description',
+                clearable: true
+              },
+              ...this.getLoadOption('UnifiedValueDesc')
+            },
+            UnifiedValue_Group: {
+              value: null,
+              type: 'select',
+              props: {
+                label: 'Unified Value Group',
+                clearable: true
+              },
+              ...this.getLoadOption('UnifiedValue_Group')
+            },
+            UnifiedValue_Category: {
+              value: null,
+              type: 'select',
+              props: {
+                label: 'Unified Value Category',
+                clearable: true
+              },
+              ...this.getLoadOption('UnifiedValue_Category')
+            },
+            ApprovalInd: {
+              value: 'REQUESTED',
+              type: 'select',
+              quickFilter: true,
+              props: {
+                label: 'Pending Approvals',
+                options: [
+                  { label: 'REQUESTED', value: 'REQUESTED' },
+                  { label: 'DENIED', value: 'DENIED' },
+                  { label: 'APPROVED', value: 'APPROVED' },
+                  { label: 'CANCELLED', value: 'CANCELLED' },
+                ]
+              }
+            },
+            TableName: {
+              value: null,
+              type: 'select',
+              quickFilter: true,
+              props: {
+                label: 'Subject Area',
+                clearable: true
+              },
+              loadOptions: {
+                apiRoute: 'apiRoutes.qmapper.metadata',
+                select: { label: 'SubjectArea', id: 'TableName' }
+              }
+            },
+            Division: {
+              value: 'ALL',
+              type: 'select',
+              quickFilter: true,
+              props: {
+                label: 'Division',
+                options: [
+                  { label: 'ALL', value: 'ALL' }
+                ]
+              },
+              loadOptions: {
+                apiRoute: 'apiRoutes.qmapper.references',
+                select: { label: 'Division', id: 'Division' },
+                requestParams: { filter: { _distinct: 'Division' } }
+              }
+            },
+            SourceSystem: {
+              value: 'ALL',
+              type: 'select',
+              quickFilter: true,
+              props: {
+                label: 'Source Application',
+                options: [
+                  { label: 'ALL', value: 'ALL' }
+                ]
+              },
+              loadOptions: {
+                apiRoute: 'apiRoutes.qmapper.metadata',
+                select: { label: 'SourceSystem', id: 'SourceSystem' },
+                requestParams: { filter: { _distinct: 'SourceSystem' } }
+              }
+            },
+          },
           requestParams: {
             include: 'reference',
             notToSnakeCase: ['ApprovalInd', 'RuleCreatedBy', 'TableColumnName', 'RuleValue', 'RuleValueDesc', 'MatchType', 'UnifiedValue', 'UnifiedValueDesc', 'UnifiedValue_Group', 'UnifiedValue_Category']
