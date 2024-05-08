@@ -15,6 +15,7 @@ export default function controller() {
   const state = reactive({
     show: false,
     currentAction: '',
+    loading: false,
     requested: {},
     actions: {
       1: 'APPROVED',
@@ -132,14 +133,17 @@ export default function controller() {
     //Send action
     async sendAction(action: any, att: any) {
       try {
+        state.loading = true
         state.show = false;
         const attributes = {
           ...att,
           RejectionComments: state.comment
         };
         await services.sendActionRuleApprove({ action, attributes });
+        state.loading = false
         await methods.getDataTable(true);
       } catch (e) {
+        state.loading = false
         console.error(e);
       }
     },

@@ -1,5 +1,7 @@
 <template></template>
 <script>
+import { store } from '../../../plugins/utils';
+
 export default {
   data() {
     return {
@@ -92,7 +94,7 @@ export default {
         modalActions: {
           save: {
             props: {
-              label: 'Send Request',
+              label: this.$hasAccess('imapper.approvals.edit') ? 'Save' : 'Send Request',
               color: 'secondary'
             }
           },
@@ -395,6 +397,13 @@ export default {
                   ...formData,
                   TableColumnValue: null,
                   UnifiedValue: null,
+                  UnifiedValue_Group: null,
+                  UnifiedValue_Category: null
+                };
+              } else if(changedFields.includes('UnifiedValue')) {
+                formData = {
+                  ...formData,
+                  UnifiedValueDesc: null,
                   UnifiedValue_Group: null,
                   UnifiedValue_Category: null
                 };

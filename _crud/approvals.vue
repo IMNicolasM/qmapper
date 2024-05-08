@@ -1,6 +1,7 @@
 <template></template>
 <script>
-import {TEST_USERS as users, TAG_COLORS } from 'src/modules/qmapper/_pages/admin/approval/constant'
+import { TEST_USERS as users, TAG_COLORS } from 'src/modules/qmapper/_pages/admin/approval/constant';
+
 export default {
   data() {
     return {
@@ -9,6 +10,7 @@ export default {
   },
   computed: {
     crudData() {
+      const info = this.crudInfo;
       return {
         crudId: this.crudId,
         entityName: config('main.qmapper.entityNames.approvals'),
@@ -18,7 +20,7 @@ export default {
         modalActions: {
           save: {
             props: {
-              label: 'Approve',
+              label: 'Save',
               color: 'secondary'
             }
           },
@@ -113,12 +115,200 @@ export default {
           ],
           requestParams: {
             include: 'reference',
-            notToSnakeCase: ['ApprovalInd', 'RuleCreatedBy', 'TableColumnName', 'RuleValue', 'RuleValueDesc', 'MatchType','UnifiedValue', 'UnifiedValueDesc', 'UnifiedValue_Group', 'UnifiedValue_Category']
+            notToSnakeCase: ['ApprovalInd', 'RuleCreatedBy', 'TableColumnName', 'RuleValue', 'RuleValueDesc', 'MatchType', 'UnifiedValue', 'UnifiedValueDesc', 'UnifiedValue_Group', 'UnifiedValue_Category']
           },
-          excludeActions: ['export', 'sync', 'recommendations'],
+          excludeActions: ['export', 'sync', 'recommendations']
         },
-        update: false,
-        formLeft: {}
+        update: {
+          title: 'Editing',
+          customFormResponse: (criteria, formData, customParams) => {
+            return new Promise((resolve, reject) => {
+              this.$crud.post(`${config('apiRoutes.qmapper.approvals')}/action`, { editing: true, attributes: formData })
+                .then(response => resolve(response))
+                .catch(error => reject(error?.response?.data?.errors || {}))
+            })
+          },
+        },
+        formLeft: {
+          SeqNo: { value: '' },
+          UNI_RuleID: { value: '' },
+          UNI_MetaID: { value: '' },
+          SourceSystem: {
+            value: null,
+            type: 'select',
+            props: {
+              label: 'Source Application'
+            },
+            ...this.getLoadOption('SourceSystem')
+          },
+          Division: {
+            value: null,
+            type: 'select',
+            props: {
+              label: 'Division'
+            },
+            ...this.getLoadOption('Division')
+          },
+          TableName: {
+            value: null,
+            type: 'select',
+            props: {
+              label: 'Table Name'
+            },
+            ...this.getLoadOption('TableName')
+          },
+          TableColumnName: {
+            value: null,
+            type: 'select',
+            required: true,
+            props: {
+              label: 'Source Column'
+            },
+            ...this.getLoadOption('TableColumnName', { TableName: info?.TableName })
+          },
+          RuleValue: {
+            value: null,
+            type: 'select',
+            required: true,
+            props: {
+              'fill-input': true,
+              'hide-selected': true,
+              label: 'Source Value'
+            },
+            ...(info?.TableColumnName ? this.getLoadOption('TableColumnValue', { TableColumnName: info.TableColumnName }) : {})
+          },
+          RuleValueDesc: {
+            value: '',
+            type: 'input',
+            required: true,
+            props: {
+              label: 'Source Value Description'
+            }
+          },
+          MatchType: {
+            value: 'EXACT',
+            type: 'select',
+            required: true,
+            props: {
+              label: 'Match type*',
+              options: [
+                { label: 'Exact Match', value: 'EXACT' }
+                // { label: 'PATTERN', value: 'PATTERN' }
+              ]
+            }
+          }
+        },
+        formRight: {
+          UnifiedValue: {
+            value: null,
+            type: 'select',
+            required: true,
+            props: {
+              'fill-input': true,
+              'hide-selected': true,
+              label: 'Unified Value'
+            },
+            ...(info?.TableColumnName ? this.getLoadOption('UnifiedValue', { TableColumnName: info.TableColumnName }) : {})
+          },
+          UnifiedValueDesc: {
+            value: null,
+            type: 'select',
+            required: true,
+            props: {
+              'fill-input': true,
+              'hide-selected': true,
+              label: 'Unified Value Description'
+            },
+            ...(info?.UnifiedValue ? this.getLoadOption('UnifiedValueDesc', { TableColumnName: info.UnifiedValue }) : {})
+          },
+          UnifiedValue_Group: {
+            value: null,
+            type: 'select',
+            props: {
+              'fill-input': true,
+              'hide-selected': true,
+              label: 'Unified Value Group'
+            },
+            ...(info?.UnifiedValue ? this.getLoadOption('UnifiedValue_Group', { TableColumnName: info.UnifiedValue }) : {})
+          },
+          UnifiedValue_Category: {
+            value: null,
+            type: 'select',
+            props: {
+              'fill-input': true,
+              'hide-selected': true,
+              label: 'Unified Value Category'
+            },
+            ...(info?.UnifiedValue ? this.getLoadOption('UnifiedValue_Category', { TableColumnName: info.UnifiedValue }) : {})
+          },
+          ApprovalInd: {
+            value: 'APPROVED',
+            type: 'select',
+            required: true,
+            props: {
+              label: 'Mapping indicator',
+              options: [
+                { label: 'DENIED', value: 'DENIED' },
+                { label: 'APPROVED', value: 'APPROVED' }
+              ]
+            }
+          },
+          RulePriority: {
+            value: 1,
+            type: 'input',
+            required: true,
+            props: {
+              label: 'Rule Priority',
+              type: 'number'
+            }
+          },
+          RejectionComments: {
+            value: '',
+            type: 'input',
+            props: {
+              type: 'textarea',
+              rows: '3',
+              label: 'Leave a note'
+            }
+          }
+        },
+        handleFormUpdates: (formData, changedFields, formType) => {
+          return new Promise(resolve => {
+            if (changedFields.length === 1) {
+              if(changedFields.includes('TableName')) {
+                formData = {
+                  ...formData,
+                  UNI_MetaID: null,
+                  TableColumnName: null,
+                  RuleValue: null,
+                  RuleValueDesc: '',
+                  UnifiedValue: null,
+                  UnifiedValueDesc: null,
+                  UnifiedValue_Group: null,
+                  UnifiedValue_Category: null
+                };
+              } else if(changedFields.includes('TableColumnName')) {
+                formData = {
+                  ...formData,
+                  RuleValue: null,
+                  RuleValueDesc: '',
+                  UnifiedValue: null,
+                  UnifiedValueDesc: null,
+                  UnifiedValue_Group: null,
+                  UnifiedValue_Category: null
+                };
+              } else if(changedFields.includes('UnifiedValue')) {
+                formData = {
+                  ...formData,
+                  UnifiedValueDesc: null,
+                  UnifiedValue_Group: null,
+                  UnifiedValue_Category: null
+                };
+              }
+            }
+            resolve(formData);
+          });
+        }
       };
     },
     //Crud info
@@ -129,37 +319,52 @@ export default {
   methods: {
     //Tag to show status
     getTag(item) {
-      if (!item) return '-'
+      if (!item) return '-';
       const { bg, color } = TAG_COLORS[item] || {
         bg: '#B1E2FA',
         color: '#156DAC'
       };
 
 
-      return `<span class="tw-border tw-py-0.5 tw-px-2 tw-rounded-md tw-font-bold" style="background-color: ${bg}; color: ${color}; font-size: 10px;">${item}</span>`
+      return `<span class="tw-border tw-py-0.5 tw-px-2 tw-rounded-md tw-font-bold" style="background-color: ${bg}; color: ${color}; font-size: 10px;">${item}</span>`;
     },
     //Compare style of column
     formatRowDiff(row, column, diffColumn = '', columnColor = 'ApprovalInd') {
-      if (!row || !column) return '-'
+      if (!row || !column) return '-';
 
       let columnToCompare = diffColumn;
 
-      if(!diffColumn?.length) columnToCompare = `ref${column}`
-      let compareValue = row[column]
-      let diffValue = row[columnToCompare]
+      if (!diffColumn?.length) columnToCompare = `ref${column}`;
+      let compareValue = row[column];
+      let diffValue = row[columnToCompare];
 
       const { color } = TAG_COLORS[row[columnColor]] || {
         color: '#156DAC'
       };
 
-      if(compareValue == null) compareValue = String(compareValue).toUpperCase()
-      if(diffValue == null) diffValue = String(diffValue).toUpperCase()
+      if (compareValue == null) compareValue = String(compareValue).toUpperCase();
+      if (diffValue == null) diffValue = String(diffValue).toUpperCase();
 
       return `<div class="tw-py-0.5 tw-px-1" style="font-size: 13px;">
 <span class="tw-text-[#666] tw-line-through">${diffValue}</span>
 <br />
 <span class="tw-font-semibold" style="color: ${color};">${compareValue}</span>
-</div>`
+</div>`;
+    },
+    //Get Load Option
+    getLoadOption(name, moreFilters = {}) {
+      return {
+        loadOptions: {
+          apiRoute: 'apiRoutes.qmapper.references',
+          select: { label: name, id: name },
+          requestParams: {
+            filter: {
+              _distinct: name,
+              ...moreFilters
+            }
+          }
+        }
+      };
     }
   }
 };
