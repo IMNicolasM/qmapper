@@ -86,7 +86,7 @@ export default function controller() {
           label: 'Deny',
           color: '#C42C27'
         },
-        'CANCEL': {
+        'CANCELLED': {
           label: 'Cancel',
           color: '#C42C27'
         },
