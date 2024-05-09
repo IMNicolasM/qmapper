@@ -280,7 +280,22 @@ export default {
           disabled: {
             row: (item) => item?.countRequest > 0
           },
-          excludeActions: ['export', 'sync', 'recommendations']
+          excludeActions: ['export', 'sync', 'recommendations'],
+          actions: [
+            {
+              name: 'edit',
+              format: (item) => (item?.countRequest > 0 ? {vIf: false} : {})
+            },
+            {
+              icon: 'fa-regular fa-timer',
+              label: 'Request Pending',
+              vIf: false,
+              action: (item) => {
+                this.$router.push({name: 'qmapper.admin.approvals', params: {}})
+              },
+              format: (item) => (item?.countRequest > 0 ? {vIf: true} : {})
+            },
+          ]
         },
         update: {
           title: 'Update Value',

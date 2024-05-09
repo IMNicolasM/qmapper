@@ -3,6 +3,7 @@ import { reactive, toRefs, computed, ref } from 'vue';
 import crud from 'src/modules/qcrud/_components/crud.vue';
 import services from './services';
 import { i18n, store } from 'src/plugins/utils';
+import { TAG_COLORS } from './constant'
 
 export default function controller() {
 
@@ -17,11 +18,6 @@ export default function controller() {
     currentAction: '',
     loading: false,
     requested: {},
-    actions: {
-      1: 'APPROVED',
-      2: 'DENIED',
-      3: 'CANCELLED'
-    },
     comment: '',
     attributes: {}
   });
@@ -37,46 +33,31 @@ export default function controller() {
               vIf: store.hasAccess('imapper.approvals.acceptance'),
               tooltip: 'Approve',
               name: 'approve',
-              action: (item: any) => methods.showModal(state.actions[1], item)
+              action: (item: any) => methods.showModal(TAG_COLORS.APPROVED.action, item),
+              format: (item) => item.ApprovalInd === TAG_COLORS.APPROVED.action
             },
             {
               icon: 'fa-regular fa-ban',
               vIf: store.hasAccess('imapper.approvals.acceptance'),
               tooltip: 'Deny',
               name: 'deny',
-              action: (item) => methods.showModal(state.actions[2], item)
+              action: (item) => methods.showModal(TAG_COLORS.DENIED.action, item),
+              format: (item) => item.ApprovalInd === TAG_COLORS.DENIED.action
             },
             {
               icon: 'fa-regular fa-ban',
               vIf: store.hasAccess('imapper.approvals.cancel'),
               tooltip: 'Cancel',
               name: 'cancel',
-              action: (item) => methods.showModal(state.actions[3], item)
+              action: (item) => methods.showModal(TAG_COLORS.CANCELLED.action, item),
+              format: (item) => item.ApprovalInd === TAG_COLORS.CANCELLED.action
             }
-          ],
-          disabled: {
-            action: (item) => item.ApprovalInd ? item.ApprovalInd !== 'REQUESTED' : false
-          }
+          ]
         }
       };
     }),
     modalActions: computed(() => {
-      const actions = {
-        'APPROVED': {
-          label: 'Approve',
-          color: '#49C185'
-        },
-        'DENIED': {
-          label: 'Deny',
-          color: '#C42C27'
-        },
-        'CANCELLED': {
-          label: 'Cancel Request',
-          color: '#C42C27'
-        },
-      };
-
-      const currentAction = actions[state.currentAction] || { color: 'gray', label: 'None'};
+      const infoAction = TAG_COLORS[state.currentAction] || { btnColor: 'gray', label: 'None'};
 
       return [
         {
@@ -89,8 +70,8 @@ export default function controller() {
         },
         {
           props: {
-            label: currentAction.label,
-            style: `background-color: ${currentAction.color}`,
+            label: infoAction.label,
+            style: `background-color: ${infoAction.btnColor}`,
             textColor: "white"
           },
           action: () => {
@@ -115,7 +96,7 @@ export default function controller() {
   // Methods
   const methods = {
     //Send action
-    async sendAction(action: any, att: any) {
+    async sendAction(action: string, att: any) {
       try {
         state.loading = true
         state.show = false;
