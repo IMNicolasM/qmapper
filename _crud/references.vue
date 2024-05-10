@@ -3,80 +3,12 @@
 export default {
   data() {
     return {
-      crudId: this.$uid()
+      crudId: this.$uid(),
+      notToSnakeCase: ['UNI_RefID', 'TableColumnName', 'TableColumnValue', 'TableColumnValueDesc', 'MatchType', 'TablePK_EDW', 'UnifiedValue', 'UnifiedValueDesc', 'UnifiedValue_Group', 'UnifiedValue_Category']
     };
   },
   computed: {
     crudData() {
-      const columnName = this.crudInfo.TableColumnName
-      const unifiedValue = this.crudInfo.UnifiedValue
-
-      const loadOptions = {
-        columnValue: columnName ? {
-          loadOptions: {
-            apiRoute: 'apiRoutes.qmapper.references',
-            select: { label: 'TableColumnValue', id: 'TableColumnValue' },
-            requestParams: {
-              filter: {
-                _distinct: 'TableColumnValue',
-                TableColumnName: this.crudInfo.TableColumnName
-              }
-            }
-          }
-        } : {},
-        unifiedValue: columnName ? {
-          loadOptions: {
-            apiRoute: 'apiRoutes.qmapper.references',
-            select: { label: 'UnifiedValue', id: 'UnifiedValue' },
-            requestParams: {
-              filter: {
-                _distinct: 'UnifiedValue',
-                TableColumnName: columnName
-              }
-            }
-          }
-        } : {},
-        UnifiedValueDesc: unifiedValue ? {
-          loadOptions: {
-            apiRoute: 'apiRoutes.qmapper.references',
-            select: { label: 'UnifiedValueDesc', id: 'UnifiedValueDesc' },
-            requestParams: {
-              filter: {
-                _distinct: 'UnifiedValueDesc',
-                TableColumnName: columnName,
-                UnifiedValue: unifiedValue
-              }
-            }
-          }
-        } : {},
-        unifiedValueGroup: unifiedValue ? {
-          loadOptions: {
-            apiRoute: 'apiRoutes.qmapper.references',
-            select: { label: 'UnifiedValue_Group', id: 'UnifiedValue_Group' },
-            requestParams: {
-              filter: {
-                _distinct: 'UnifiedValue_Group',
-                TableColumnName: columnName,
-                UnifiedValue: unifiedValue
-              }
-            }
-          }
-        } : {},
-        UnifiedValueCategory: unifiedValue ? {
-          loadOptions: {
-            apiRoute: 'apiRoutes.qmapper.references',
-            select: { label: 'UnifiedValue_Category', id: 'UnifiedValue_Category' },
-            requestParams: {
-              filter: {
-                _distinct: 'UnifiedValue_Category',
-                TableColumnName: columnName,
-                UnifiedValue: unifiedValue
-              }
-            }
-          }
-        } : {},
-      };
-
       return {
         crudId: this.crudId,
         entityName: config('main.qmapper.entityNames.references'),
@@ -85,7 +17,7 @@ export default {
         create: {
           title: 'Create New Value',
           requestParams: {
-            notToSnakeCase: ['UNI_RefID', 'TableColumnName', 'TableColumnValue', 'MatchType','TablePK_EDW', 'UnifiedValue', 'UnifiedValueDesc', 'UnifiedValue_Group', 'UnifiedValue_Category']
+            notToSnakeCase: this.notToSnakeCase
           },
           useSystemMessage: true
         },
@@ -212,7 +144,7 @@ export default {
               value: 0,
               type: 'checkbox',
               props: {
-                label: 'Pending Approvals',
+                label: 'Pending Approvals'
               }
             },
             TableName: {
@@ -271,11 +203,11 @@ export default {
                 select: { label: 'SourceSystem', id: 'SourceSystem' },
                 requestParams: { filter: { _distinct: 'SourceSystem' } }
               }
-            },
+            }
           },
           requestParams: {
             include: 'requestApproval',
-            notToSnakeCase: ['TableColumnName', 'TableColumnValue', 'TableColumnValueDesc', 'MatchType', 'UnifiedValue', 'UnifiedValueDesc', 'UnifiedValue_Group', 'UnifiedValue_Category']
+            notToSnakeCase: this.notToSnakeCase
           },
           disabled: {
             row: (item) => item?.countRequest > 0
@@ -284,135 +216,37 @@ export default {
           actions: [
             {
               name: 'edit',
-              format: (item) => (item?.countRequest > 0 ? {vIf: false} : {})
+              format: (item) => (item?.countRequest > 0 ? { vIf: false } : {})
             },
             {
               icon: 'fa-regular fa-timer',
               label: 'Request Pending',
               vIf: false,
               action: (item) => {
-                this.$router.push({name: 'qmapper.admin.approvals', params: {}})
+                this.$router.push({ name: 'qmapper.admin.approvals', params: {} });
               },
-              format: (item) => (item?.countRequest > 0 ? {vIf: true} : {})
-            },
+              format: (item) => (item?.countRequest > 0 ? { vIf: true } : {})
+            }
           ]
         },
         update: {
           title: 'Update Value',
           requestParams: {
-            notToSnakeCase: ['UNI_RefID', 'UNI_RuleID', 'Division', 'TableColumnName', 'TableColumnValue', 'TableColumnValueDesc', 'MatchType','UnifiedValue', 'UnifiedValueDesc', 'UnifiedValue_Group', 'UnifiedValue_Category']
+            notToSnakeCase: [...this.notToSnakeCase, 'UNI_RuleID', 'Division']
           },
           customFormResponse: (criteria, formData, customParams) => {
             return new Promise((resolve, reject) => {
               this.$crud.post('apiRoutes.qmapper.references', { attributes: formData })
                 .then(response => resolve(response))
-                .catch(error => reject(error?.response?.data?.errors || {}))
-            })
+                .catch(error => reject(error?.response?.data?.errors || {}));
+            });
           },
           useSystemMessage: true
-        },
-        formLeft: {
-          UNI_RefID: { value: '' },
-          UNI_RuleID: { value: '' },
-          Division: { value: 'ALL' },
-          TableColumnName:  {
-            value: null,
-            type: 'select',
-            required: true,
-            props: {
-              readonly: this.crudInfo.typeForm === 'update',
-              label: 'Source Column',
-              clearable: true
-            },
-            loadOptions: {
-              apiRoute: 'apiRoutes.qmapper.references',
-              select: { label: 'TableColumnName', id: 'TableColumnName' },
-              requestParams: { filter: { _distinct: 'TableColumnName' } }
-            }
-          },
-          TableColumnValue: {
-            value: null,
-            type: 'select',
-            required: true,
-            props: {
-              'fill-input': true,
-              'hide-selected': true,
-              readonly: this.crudInfo.typeForm === 'update',
-              label: 'Source Value',
-              options: [],
-            },
-            ...loadOptions.columnValue
-          },
-          TableColumnValueDesc: {
-            value: '',
-            type: 'input',
-            required: true,
-            props: {
-              readonly: this.crudInfo.typeForm === 'update',
-              label: 'Source Value Description',
-            }
-          },
-          MatchType: {
-            value: 'EXACT',
-            type: 'select',
-            require: true,
-            props: {
-              label: 'Match type*',
-              options: [
-                { label: 'Exact Match', value: 'EXACT' },
-                // { label: 'PATTERN', value: 'PATTERN' }
-              ]
-            }
-          }
-        },
-        formRight: {
-          UnifiedValue: {
-            value: null,
-            type: 'select',
-            required: true,
-            props: {
-              'fill-input': true,
-              'hide-selected': true,
-              label: 'Unified Value'
-            },
-            ...loadOptions.unifiedValue
-          },
-          UnifiedValueDesc: {
-            value: null,
-            type: 'select',
-            required: true,
-            props: {
-              'fill-input': true,
-              'hide-selected': true,
-              label: 'Unified Value Description'
-            },
-            ...loadOptions.UnifiedValueDesc
-          },
-          UnifiedValue_Group: {
-            value: null,
-            type: 'select',
-            props: {
-              'fill-input': true,
-              'hide-selected': true,
-              label: 'Unified Value Group'
-            },
-            ...loadOptions.unifiedValueGroup
-          },
-          UnifiedValue_Category: {
-            value: null,
-            type: 'select',
-            props: {
-              'fill-input': true,
-              'hide-selected': true,
-              label: 'Unified Value Category'
-            },
-            ...loadOptions.UnifiedValueCategory
-          }
         },
         handleFormUpdates: (formData, changedFields, formType) => {
           return new Promise(resolve => {
             if (changedFields.length === 1) {
-              if(changedFields.includes('TableColumnName')) {
+              if (changedFields.includes('TableColumnName')) {
                 formData = {
                   ...formData,
                   TableColumnValue: null,
@@ -420,7 +254,7 @@ export default {
                   UnifiedValue_Group: null,
                   UnifiedValue_Category: null
                 };
-              } else if(changedFields.includes('UnifiedValue')) {
+              } else if (changedFields.includes('UnifiedValue')) {
                 formData = {
                   ...formData,
                   UnifiedValueDesc: null,
@@ -447,11 +281,11 @@ export default {
           select: { label: name, id: name },
           requestParams: {
             filter: {
-              _distinct: name,
+              _distinct: name
             }
           }
         }
-      }
+      };
     }
   }
 };
