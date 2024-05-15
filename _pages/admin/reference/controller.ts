@@ -19,11 +19,12 @@ export default function controller() {
   const computeds = {
     customCrudData: computed(() => {
       const crudInfo = computeds.crudInfo.value;
-      const isUpdate = crudInfo.typeForm === 'update';
+      const isUpdate = crudInfo.typeForm !== 'create';
       const tableName = crudInfo.TableName;
       const columnName = crudInfo.TableColumnName;
       const columnValue = crudInfo.TableColumnValue;
       const unifiedValue = crudInfo.UnifiedValue;
+      const unifiedFilters = { TableColumnName: columnName, Division: crudInfo?.Division }
 
       return {
         crudId: state.crudId,
@@ -31,13 +32,14 @@ export default function controller() {
           UNI_RefID: { value: '' },
           UNI_RuleID: { value: '' },
           Division: { value: 'ALL' },
+          SourceSystem: { value: 'ALL' },
           TableName: {
-            value: isUpdate ? '' : methods.getCrudFilters()?.TableName || 'ALL',
-            type: isUpdate ? 'input' : 'select',
+            value: methods.getCrudFilters()?.TableName,
+            type: 'select',
             required: true,
             props: {
-              readonly: isUpdate,
-              label: 'Subject Area'
+              label: 'Subject Area',
+              vIf: !isUpdate
             },
             loadOptions: {
               apiRoute: 'apiRoutes.qmapper.metadata',
@@ -114,7 +116,7 @@ export default function controller() {
             },
             ...(!columnName ? {} : methods.getLoadOption({
               name: 'UnifiedValue',
-              moreFilters: { TableColumnName: columnName }
+              moreFilters: unifiedFilters
             }))
           },
           UnifiedValueDesc: {
@@ -127,7 +129,7 @@ export default function controller() {
             },
             ...(!unifiedValue ? {} : methods.getLoadOption({
               name: 'UnifiedValueDesc',
-              moreFilters: { UnifiedValue: unifiedValue }
+              moreFilters: { ...unifiedFilters, UnifiedValue: unifiedValue }
             }))
           },
           UnifiedValue_Group: {
@@ -138,9 +140,9 @@ export default function controller() {
               'hide-selected': true,
               label: 'Unified Value Group'
             },
-            ...(!unifiedValue ? {} : methods.getLoadOption({
+            ...(!columnName ? {} : methods.getLoadOption({
               name: 'UnifiedValue_Group',
-              moreFilters: { UnifiedValue: unifiedValue }
+              moreFilters: unifiedFilters
             }))
           },
           UnifiedValue_Category: {
@@ -151,9 +153,9 @@ export default function controller() {
               'hide-selected': true,
               label: 'Unified Value Category'
             },
-            ...(!unifiedValue ? {} : methods.getLoadOption({
+            ...(!columnName ? {} : methods.getLoadOption({
               name: 'UnifiedValue_Category',
-              moreFilters: { UnifiedValue: unifiedValue }
+              moreFilters: unifiedFilters
             }))
           }
         }

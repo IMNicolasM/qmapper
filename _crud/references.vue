@@ -246,20 +246,31 @@ export default {
         handleFormUpdates: (formData, changedFields, formType) => {
           return new Promise(resolve => {
             if (changedFields.length === 1) {
-              if (changedFields.includes('TableColumnName')) {
+              if (changedFields.includes('TableName')) {
+                formData = {
+                  ...formData,
+                  TableColumnName: null,
+                  TableColumnValue: null,
+                  TableColumnValueDesc: null,
+                  UnifiedValue: null,
+                  UnifiedValueDesc: null,
+                  UnifiedValue_Group: null,
+                  UnifiedValue_Category: null
+                };
+              } else if (changedFields.includes('TableColumnName')) {
                 formData = {
                   ...formData,
                   TableColumnValue: null,
+                  TableColumnValueDesc: null,
                   UnifiedValue: null,
+                  UnifiedValueDesc: null,
                   UnifiedValue_Group: null,
                   UnifiedValue_Category: null
                 };
               } else if (changedFields.includes('UnifiedValue')) {
                 formData = {
                   ...formData,
-                  UnifiedValueDesc: null,
-                  UnifiedValue_Group: null,
-                  UnifiedValue_Category: null
+                  UnifiedValueDesc: null
                 };
               }
             }
