@@ -4,7 +4,7 @@ export default {
   data() {
     return {
       crudId: this.$uid(),
-      notToSnakeCase: ['UNI_RefID', 'TableColumnName', 'TableColumnValue', 'TableColumnValueDesc', 'MatchType', 'TablePK_EDW', 'UnifiedValue', 'UnifiedValueDesc', 'UnifiedValue_Group', 'UnifiedValue_Category']
+      notToSnakeCase: ['Division', 'UNI_RefID', 'TableColumnName', 'TableColumnValue', 'TableColumnValueDesc', 'MatchType', 'TablePK_EDW', 'UnifiedValue', 'UnifiedValueDesc', 'UnifiedValue_Group', 'UnifiedValue_Category']
     };
   },
   computed: {
@@ -38,12 +38,19 @@ export default {
         read: {
           columns: [
             {
+              name: 'Division',
+              label: 'Division',
+              field: 'Division',
+              align: 'rigth',
+              sortable: true,
+              action: 'edit'
+            },
+            {
               name: 'TableColumnName',
               label: 'Source Column',
               field: 'TableColumnName',
               align: 'rigth',
-              sortable: true,
-              action: 'edit'
+              sortable: true
             },
             {
               name: 'TableColumnValue',

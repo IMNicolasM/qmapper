@@ -10,7 +10,10 @@ export default {
   },
   computed: {
     crudData() {
-      const info = this.crudInfo;
+      const crudInfo = this.crudInfo;
+
+      const unifiedFilters = { TableColumnName: crudInfo?.TableColumnName, Division: crudInfo?.Division };
+
       return {
         crudId: this.crudId,
         entityName: config('main.qmapper.entityNames.approvals'),
@@ -56,6 +59,14 @@ export default {
               align: 'center',
               sortable: true,
               action: 'edit'
+            },
+            {
+              name: 'RuleCreatedDate',
+              label: 'Date',
+              field: 'RuleCreatedDate',
+              align: 'center',
+              sortable: true,
+              format: val => val ? this.getDate(val) : '-',
             },
             {
               name: 'RuleValue',
@@ -121,7 +132,7 @@ export default {
                 label: 'Unified Value',
                 clearable: true
               },
-              ...this.getLoadOption('UnifiedValue')
+              ...this.getLoadOption({ name: 'UnifiedValue' })
             },
             UnifiedValueDesc: {
               value: null,
@@ -130,7 +141,7 @@ export default {
                 label: 'Unified Value Description',
                 clearable: true
               },
-              ...this.getLoadOption('UnifiedValueDesc')
+              ...this.getLoadOption({ name: 'UnifiedValueDesc' })
             },
             UnifiedValue_Group: {
               value: null,
@@ -139,7 +150,7 @@ export default {
                 label: 'Unified Value Group',
                 clearable: true
               },
-              ...this.getLoadOption('UnifiedValue_Group')
+              ...this.getLoadOption({ name: 'UnifiedValue_Group' })
             },
             UnifiedValue_Category: {
               value: null,
@@ -148,7 +159,7 @@ export default {
                 label: 'Unified Value Category',
                 clearable: true
               },
-              ...this.getLoadOption('UnifiedValue_Category')
+              ...this.getLoadOption({ name: 'UnifiedValue_Category' })
             },
             ApprovalInd: {
               value: 'REQUESTED',
@@ -160,7 +171,7 @@ export default {
                   { label: 'REQUESTED', value: 'REQUESTED' },
                   { label: 'DENIED', value: 'DENIED' },
                   { label: 'APPROVED', value: 'APPROVED' },
-                  { label: 'CANCELLED', value: 'CANCELLED' },
+                  { label: 'CANCELLED', value: 'CANCELLED' }
                 ]
               }
             },
@@ -208,11 +219,11 @@ export default {
                 select: { label: 'SourceSystem', id: 'SourceSystem' },
                 requestParams: { filter: { _distinct: 'SourceSystem' } }
               }
-            },
+            }
           },
           requestParams: {
             include: 'reference',
-            notToSnakeCase: ['ApprovalInd', 'RuleCreatedBy', 'TableColumnName', 'RuleValue', 'RuleValueDesc', 'MatchType', 'UnifiedValue', 'UnifiedValueDesc', 'UnifiedValue_Group', 'UnifiedValue_Category']
+            notToSnakeCase: ['ApprovalInd', 'RuleCreatedBy', 'TableColumnName', 'RuleValue', 'RuleValueDesc', 'MatchType', 'UnifiedValue', 'UnifiedValueDesc', 'UnifiedValue_Group', 'UnifiedValue_Category', 'RuleCreatedDate']
           },
           excludeActions: ['export', 'sync', 'recommendations']
         },
@@ -220,11 +231,14 @@ export default {
           title: 'Editing',
           customFormResponse: (criteria, formData, customParams) => {
             return new Promise((resolve, reject) => {
-              this.$crud.post(`${config('apiRoutes.qmapper.approvals')}/action`, { editing: true, attributes: formData })
+              this.$crud.post(`${config('apiRoutes.qmapper.approvals')}/action`, {
+                editing: true,
+                attributes: formData
+              })
                 .then(response => resolve(response))
-                .catch(error => reject(error?.response?.data?.errors || {}))
-            })
-          },
+                .catch(error => reject(error?.response?.data?.errors || {}));
+            });
+          }
         },
         formLeft: {
           SeqNo: { value: '' },
@@ -236,51 +250,48 @@ export default {
             props: {
               label: 'Source Application'
             },
-            ...this.getLoadOption('SourceSystem')
+            ...this.getLoadOption({ name: 'SourceSystem' })
           },
           Division: {
-            value: null,
-            type: 'select',
+            value: '',
+            type: 'input',
             props: {
-              label: 'Division',
-              options: [
-                { label: 'ALL', value: 'ALL' }
-              ]
-            },
-            ...this.getLoadOption('Division')
+              readonly: true,
+              label: 'Division'
+            }
           },
           TableName: {
             value: null,
             type: 'select',
             props: {
-              label: 'Table Name'
+              label: 'Table Name',
+              readonly: true
             },
-            ...this.getLoadOption('TableName')
+            ...this.getLoadOption({
+              apiRoute: 'apiRoutes.qmapper.metadata',
+              select: { label: 'SubjectArea', id: 'TableName' }
+            })
           },
           TableColumnName: {
-            value: null,
-            type: 'select',
-            required: true,
+            value: '',
+            type: 'input',
             props: {
-              label: 'Source Column'
+              label: 'Source Column',
+              readonly: true
             },
-            ...this.getLoadOption('TableColumnName', { TableName: info?.TableName })
           },
           RuleValue: {
-            value: null,
-            type: 'select',
+            value: '',
+            type: 'input',
             required: true,
             props: {
-              'fill-input': true,
-              'hide-selected': true,
+              readonly: true,
               label: 'Source Value'
-            },
-            ...(info?.TableColumnName ? this.getLoadOption('TableColumnValue', { TableColumnName: info.TableColumnName }) : {})
+            }
           },
           RuleValueDesc: {
             value: '',
             type: 'input',
-            required: true,
             props: {
               label: 'Source Value Description'
             }
@@ -308,7 +319,10 @@ export default {
               'hide-selected': true,
               label: 'Unified Value'
             },
-            ...(info?.TableColumnName ? this.getLoadOption('UnifiedValue', { TableColumnName: info.TableColumnName }) : {})
+            ...this.getLoadOption({
+              name: 'UnifiedValue',
+              moreFilters: unifiedFilters
+            })
           },
           UnifiedValueDesc: {
             value: null,
@@ -319,7 +333,10 @@ export default {
               'hide-selected': true,
               label: 'Unified Value Description'
             },
-            ...(info?.UnifiedValue ? this.getLoadOption('UnifiedValueDesc', { TableColumnName: info.UnifiedValue }) : {})
+            ...this.getLoadOption({
+              name: 'UnifiedValueDesc',
+              moreFilters: { ...unifiedFilters, UnifiedValue: crudInfo?.UnifiedValue }
+            })
           },
           UnifiedValue_Group: {
             value: null,
@@ -329,7 +346,10 @@ export default {
               'hide-selected': true,
               label: 'Unified Value Group'
             },
-            ...(info?.UnifiedValue ? this.getLoadOption('UnifiedValue_Group', { TableColumnName: info.UnifiedValue }) : {})
+            ...this.getLoadOption({
+              name: 'UnifiedValue_Group',
+              moreFilters: unifiedFilters
+            })
           },
           UnifiedValue_Category: {
             value: null,
@@ -339,7 +359,10 @@ export default {
               'hide-selected': true,
               label: 'Unified Value Category'
             },
-            ...(info?.UnifiedValue ? this.getLoadOption('UnifiedValue_Category', { TableColumnName: info.UnifiedValue }) : {})
+            ...this.getLoadOption({
+              name: 'UnifiedValue_Group',
+              moreFilters: unifiedFilters
+            })
           },
           ApprovalInd: {
             value: 'APPROVED',
@@ -375,7 +398,7 @@ export default {
         handleFormUpdates: (formData, changedFields, formType) => {
           return new Promise(resolve => {
             if (changedFields.length === 1) {
-              if(changedFields.includes('TableName')) {
+              if (changedFields.includes('TableName')) {
                 formData = {
                   ...formData,
                   UNI_MetaID: null,
@@ -387,7 +410,7 @@ export default {
                   UnifiedValue_Group: null,
                   UnifiedValue_Category: null
                 };
-              } else if(changedFields.includes('TableColumnName')) {
+              } else if (changedFields.includes('TableColumnName')) {
                 formData = {
                   ...formData,
                   RuleValue: null,
@@ -397,12 +420,10 @@ export default {
                   UnifiedValue_Group: null,
                   UnifiedValue_Category: null
                 };
-              } else if(changedFields.includes('UnifiedValue')) {
+              } else if (changedFields.includes('UnifiedValue')) {
                 formData = {
                   ...formData,
-                  UnifiedValueDesc: null,
-                  UnifiedValue_Group: null,
-                  UnifiedValue_Category: null
+                  UnifiedValueDesc: null
                 };
               }
             }
@@ -453,19 +474,36 @@ export default {
 </div>`;
     },
     //Get Load Option
-    getLoadOption(name, moreFilters = {}) {
+    getLoadOption({ name, moreFilters = {}, apiRoute = 'apiRoutes.qmapper.references', filter = {}, select = false }) {
+      if (!Object.keys(filter)?.length) {
+        filter = {
+          _distinct: name,
+          ...moreFilters
+        };
+      }
+
+      if (!select) {
+        select = { label: name, id: name };
+      }
       return {
         loadOptions: {
-          apiRoute: 'apiRoutes.qmapper.references',
-          select: { label: name, id: name },
+          apiRoute,
+          select,
           requestParams: {
-            filter: {
-              _distinct: name,
-              ...moreFilters
-            }
+            filter
           }
         }
       };
+    },
+    //Return date
+    getDate(val) {
+      const date = this.$trd(val, { fromUTC: true, type: 'long' }).split('at');
+
+      return `<div>
+<span><b>Date:</b> ${date[0]}</span>
+<br />
+<span><b>Hour:</b> ${date[1]}</span>
+</div>`
     }
   }
 };
