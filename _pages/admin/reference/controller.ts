@@ -1,13 +1,14 @@
 import { reactive, toRefs, computed, ref } from 'vue';
-// @ts-ignore
 import crud from 'src/modules/qcrud/_components/crud.vue';
+import customForm from 'modules/qmapper/_components/customForm/index.vue'
 import { uid, store } from 'src/plugins/utils';
 
 export default function controller() {
 
   // Refs
   const refs = {
-    crudComponent: ref(crud)
+    crudComponent: ref(crud),
+    referenceForm: ref(customForm)
   };
 
   // States
@@ -158,6 +159,9 @@ export default function controller() {
               moreFilters: unifiedFilters
             }))
           }
+        },
+        update: {
+          method: (item: any) => methods.openModal(item),
         }
       };
     }),
@@ -193,6 +197,10 @@ export default function controller() {
       if (filters) {
         return filters() || {};
       }
+    },
+    //Open form modal
+    openModal(item: any) {
+      refs.referenceForm.value?.getData({ id: item?.id, apiRoute: 'apiRoutes.qmapper.references' })
     }
   };
 
