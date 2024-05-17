@@ -1,32 +1,31 @@
 import { computed, reactive, ref, onMounted, toRefs } from 'vue';
-// @ts-ignore
-import dynamicForm from 'src/modules/qsite/_components/master/dynamicForm.vue';
-import service from 'src/modules/qmapper/_components/customForm/services';
-import { i18n, clone, store as globalStore, uid, alert } from 'src/plugins/utils';
+import service from './services';
+import { i18n, clone, alert } from 'src/plugins/utils';
 
 interface StateProps {
   showModal: boolean,
   loading: boolean,
   formData: any,
   apiRoute: string,
-  data: any
+  data: any,
+  loadedUnifiedValue: any[]
 }
-
 
 export default function controller(props: any, emit: any) {
 
   // Refs
   const refs = {
-    refForm: ref<typeof dynamicForm>()
+    formContent: ref()
   };
 
   // States
   const state = reactive<StateProps>({
     showModal: false,
     loading: false,
-    formData: null,
+    formData: {},
     apiRoute: '',
-    data: null
+    data: null,
+    loadedUnifiedValue: []
   });
 
   // Computed
@@ -36,117 +35,122 @@ export default function controller(props: any, emit: any) {
       const data = state.data;
       const unifiedFilters = { TableColumnName: data?.TableColumnName, Division: data?.Division };
 
-      return [
-        {
-          fields: {
-            MatchTypeText: {
-              type: 'banner',
-              col: 'col-12 col-md-6',
-              props: {
-                message: `Select the match type for "${data?.TableColumnValue}"`
-              }
-            },
-            MatchType: {
-              value: 'EXACT',
-              type: 'select',
-              require: true,
-              colClass: 'col-12 col-md-6 self-center',
-              props: {
-                label: 'Match type*',
-                options: [
-                  { label: 'Exact Match', value: 'EXACT' }
-                  // { label: 'PATTERN', value: 'PATTERN' }
-                ]
-              }
-            },
-            UnifiedValueText: {
-              type: 'banner',
-              col: 'col-12 col-md-6',
-              props: {
-                message: `Select the unified "${data?.TableColumnName}" for "${data?.TableColumnValue}"`
-              }
-            },
-            UnifiedValue: {
-              value: null,
-              type: 'select',
-              required: true,
-              colClass: 'col-12 col-md-6 self-center',
-              props: {
-                'fill-input': true,
-                'hide-selected': true,
-                label: 'Unified Value*'
-              },
-              ...(data?.TableColumnName ? methods.getLoadOption({
-                name: 'UnifiedValue',
-                moreFilters: unifiedFilters
-              }) : {})
-            },
-            UnifiedValueDescText: {
-              type: 'banner',
-              colClass: 'col-12 col-md-6',
-              props: {
-                message: `Select the unified "${data?.TableColumnName} Description" for "${data?.TableColumnValue}"`
-              }
-            },
-            UnifiedValueDesc: {
-              value: null,
-              type: 'select',
-              colClass: 'col-12 col-md-6 self-center',
-              props: {
-                'fill-input': true,
-                'hide-selected': true,
-                label: 'Unified Value Description'
-              },
-              ...(state.formData?.UnifiedValue ? methods.getLoadOption({
-                name: 'UnifiedValueDesc',
-                moreFilters: { ...unifiedFilters, UnifiedValue: state.formData?.UnifiedValue }
-              }) : {})
-            },
-            UnifiedValue_GroupText: {
-              type: 'banner',
-              col: 'col-12 col-md-6',
-              props: {
-                message: `Select the unified "${data?.TableColumnName} Group" for "${data?.TableColumnValue}"`
-              }
-            },
-            UnifiedValue_Group: {
-              value: null,
-              type: 'select',
-              colClass: 'col-12 col-md-6 self-center',
-              props: {
-                'fill-input': true,
-                'hide-selected': true,
-                label: 'Unified Value Group'
-              },
-              ...(data?.TableColumnName ? methods.getLoadOption({
-                name: 'UnifiedValue_Group',
-                moreFilters: unifiedFilters
-              }) : {})
-            },
-            UnifiedValue_CategoryText: {
-              type: 'banner',
-              col: 'col-12 col-md-6',
-              props: {
-                message: `Select the unified "${data?.TableColumnName} Category" for "${data?.TableColumnValue}"`
-              }
-            },
-            UnifiedValue_Category: {
-              value: null,
-              type: 'select',
-              colClass: 'col-12 col-md-6 self-center',
-              props: {
-                'fill-input': true,
-                'hide-selected': true,
-                label: 'Unified Value Category'
-              },
-              ...(data?.TableColumnName ? methods.getLoadOption({
-                name: 'UnifiedValue_Category',
-                moreFilters: unifiedFilters
-              }) : {})
-            }
+      if(!state.formData.MatchType) {
+        state.formData.MatchType = 'EXACT'
+      }
+
+      return {
+        MatchTypeText: {
+          type: 'text',
+          col: 'col-12 col-md-6',
+          props: {
+            class: 'tw-text-[#666666] list-decimal',
+            message: `Select the match type for "${data?.TableColumnValue}"`
           }
+        },
+        MatchType: {
+          value: 'EXACT',
+          type: 'select',
+          required: true,
+          colClass: 'col-12 col-md-6 self-center',
+          props: {
+            label: 'Match type*',
+            options: [
+              { label: 'Exact Match', value: 'EXACT' }
+              // { label: 'PATTERN', value: 'PATTERN' }
+            ]
+          }
+        },
+        UnifiedValueText: {
+          type: 'text',
+          col: 'col-12 col-md-6',
+          props: {
+            message: `Select the unified "${data?.TableColumnName}" for "${data?.TableColumnValue}"`
+          }
+        },
+        UnifiedValue: {
+          value: null,
+          type: 'select',
+          required: true,
+          colClass: 'col-12 col-md-6 self-center',
+          props: {
+            'fill-input': true,
+            'hide-selected': true,
+            label: 'Unified Value*'
+          },
+          ...(data?.TableColumnName ? methods.getLoadOption({
+            name: 'UnifiedValue',
+            moreFilters: unifiedFilters,
+            moreSettings: {
+              select: { label: 'UnifiedValue', id: 'UnifiedValue' },
+              loadedOptions: (data) => state.loadedUnifiedValue = data
+            }
+          }) : {})
+        },
+        UnifiedValueDescText: {
+          type: 'text',
+          colClass: 'col-12 col-md-6',
+          props: {
+            message: `Select the unified "${data?.TableColumnName} Description" for "${data?.TableColumnValue}"`
+          }
+        },
+        UnifiedValueDesc: {
+          value: null,
+          type: 'select',
+          colClass: 'col-12 col-md-6 self-center',
+          props: {
+            'fill-input': true,
+            'hide-selected': true,
+            label: 'Unified Value Description'
+          },
+          ...(state.formData?.UnifiedValue ? methods.getLoadOption({
+            name: 'UnifiedValueDesc',
+            moreFilters: { ...unifiedFilters, UnifiedValue: state.formData?.UnifiedValue }
+          }) : {})
+        },
+        UnifiedValue_GroupText: {
+          type: 'text',
+          col: 'col-12 col-md-6',
+          props: {
+            message: `Select the unified "${data?.TableColumnName} Group" for "${data?.TableColumnValue}"`
+          }
+        },
+        UnifiedValue_Group: {
+          value: null,
+          type: 'select',
+          colClass: 'col-12 col-md-6 self-center',
+          props: {
+            'fill-input': true,
+            'hide-selected': true,
+            label: 'Unified Value Group'
+          },
+          ...(data?.TableColumnName ? methods.getLoadOption({
+            name: 'UnifiedValue_Group',
+            moreFilters: unifiedFilters
+          }) : {})
+        },
+        UnifiedValue_CategoryText: {
+          type: 'text',
+          col: 'col-12 col-md-6',
+          props: {
+            message: `Select the unified "${data?.TableColumnName} Category" for "${data?.TableColumnValue}"`
+          }
+        },
+        UnifiedValue_Category: {
+          value: null,
+          type: 'select',
+          colClass: 'col-12 col-md-6 self-center',
+          props: {
+            'fill-input': true,
+            'hide-selected': true,
+            label: 'Unified Value Category'
+          },
+          ...(data?.TableColumnName ? methods.getLoadOption({
+            name: 'UnifiedValue_Category',
+            moreFilters: unifiedFilters
+          }) : {})
         }
-      ];
+      };
     }),
     //get modal Actions
     modalActions: computed(() => {
@@ -164,7 +168,7 @@ export default function controller(props: any, emit: any) {
             label: 'Send Request',
             color: 'secondary'
           },
-          action: () => refs.refForm.value?.changeStep('next', true)
+          action: () => refs?.formContent?.value.submit()
         }
       ];
     })
@@ -198,13 +202,13 @@ export default function controller(props: any, emit: any) {
     //Close Modal
     closeModal() {
       state.showModal = false;
-      state.formData = null;
+      state.formData = {};
       state.data = null;
       state.apiRoute = '';
       state.loading = false;
     },
     //Get Load options
-    getLoadOption({ name, moreFilters = {}, apiRoute = 'apiRoutes.qmapper.references', filter = {} }) {
+    getLoadOption({ name, moreFilters = {}, apiRoute = 'apiRoutes.qmapper.references', filter = {}, moreSettings = {} }) {
       if (!Object.keys(filter)?.length) {
         filter = {
           _distinct: name,
@@ -217,9 +221,19 @@ export default function controller(props: any, emit: any) {
           select: { label: name, id: name },
           requestParams: {
             filter
-          }
+          },
+          ...moreSettings
         }
       };
+    },
+    //Hidden Fields
+    hidenFields(field: any) {
+      return (field.type != 'hidden') &&
+        (field?.vIf != undefined ? field?.vIf : true);
+    },
+    //Save data
+    async submitData() {
+      console.warn('Submit: Yujuuu');
     },
 
     //Fill in data for update
@@ -236,10 +250,7 @@ export default function controller(props: any, emit: any) {
 
       state.showModal = true;
     },
-    //Save data
-    async submitData() {
-      console.warn('Submit: Yujuuu');
-    },
+
     //Create Block
     async createBlock(data, params) {
       state.loading = true;
