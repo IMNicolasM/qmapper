@@ -201,7 +201,10 @@ export default function controller() {
     //Open form modal
     openModal(item: any) {
       refs.referenceForm.value?.getData({ id: item?.id, apiRoute: 'apiRoutes.qmapper.references' })
-    }
+    },
+    async getDataTable(refresh = false) {
+      await refs.crudComponent.value.getDataTable(refresh);
+    },
   };
 
   return { ...refs, ...(toRefs(state)), ...computeds, ...methods };

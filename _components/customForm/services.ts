@@ -12,5 +12,17 @@ export default {
         resolve(response.data);
       }).catch(error => reject(error));
     });
+  },
+  postData(route: string, data: any, params = {}) {
+    return new Promise((resolve, reject) => {
+      //Params
+      let requestParams = {
+        ...params
+      };
+      //Request
+      baseService.post(route, data).then(response => {
+        resolve(response);
+      }).catch(error => reject(error));
+    });
   }
 };

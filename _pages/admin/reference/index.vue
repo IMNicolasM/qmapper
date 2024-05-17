@@ -1,6 +1,6 @@
 <template>
   <div>
-    <custom-form ref="referenceForm" />
+    <custom-form ref="referenceForm" @created="() => getDataTable(true)" />
     <crud
       ref="crudComponent"
       :crud-data="import('src/modules/qmapper/_crud/references.vue')"

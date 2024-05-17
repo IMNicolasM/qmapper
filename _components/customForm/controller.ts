@@ -1,6 +1,6 @@
 import { computed, reactive, ref, onMounted, toRefs } from 'vue';
 import service from './services';
-import { i18n, clone, alert } from 'src/plugins/utils';
+import { i18n, alert } from 'src/plugins/utils';
 
 interface StateProps {
   showModal: boolean,
@@ -8,7 +8,8 @@ interface StateProps {
   formData: any,
   apiRoute: string,
   data: any,
-  loadedUnifiedValue: any[]
+  loadedUnifiedValue: any[],
+  unified: any
 }
 
 export default function controller(props: any, emit: any) {
@@ -25,7 +26,11 @@ export default function controller(props: any, emit: any) {
     formData: {},
     apiRoute: '',
     data: null,
-    loadedUnifiedValue: []
+    loadedUnifiedValue: [],
+    unified: {
+      value: null,
+      desc: null
+    }
   });
 
   // Computed
@@ -35,8 +40,16 @@ export default function controller(props: any, emit: any) {
       const data = state.data;
       const unifiedFilters = { TableColumnName: data?.TableColumnName, Division: data?.Division };
 
-      if(!state.formData.MatchType) {
-        state.formData.MatchType = 'EXACT'
+      if (!state.formData.MatchType) {
+        state.formData.MatchType = 'EXACT';
+      }
+
+      if (!state.unified.value !== state.formData.UnifiedValue) {
+        const unified = state.formData.UnifiedValue;
+        state.unified.value = state.formData.UnifiedValue;
+        const desc = state.loadedUnifiedValue.find(uni => uni.UnifiedValue == unified)?.UnifiedValueDesc || '';
+        state.unified.desc = desc;
+        state.formData.UnifiedValueDesc = desc;
       }
 
       return {
@@ -44,7 +57,6 @@ export default function controller(props: any, emit: any) {
           type: 'text',
           col: 'col-12 col-md-6',
           props: {
-            class: 'tw-text-[#666666] list-decimal',
             message: `Select the match type for "${data?.TableColumnValue}"`
           }
         },
@@ -52,7 +64,7 @@ export default function controller(props: any, emit: any) {
           value: 'EXACT',
           type: 'select',
           required: true,
-          colClass: 'col-12 col-md-6 self-center',
+          colClass: 'col-12 col-md-6',
           props: {
             label: 'Match type*',
             options: [
@@ -80,7 +92,7 @@ export default function controller(props: any, emit: any) {
           },
           ...(data?.TableColumnName ? methods.getLoadOption({
             name: 'UnifiedValue',
-            moreFilters: unifiedFilters,
+            filter: { _groupBy: 'UnifiedValue,UnifiedValueDesc', ...unifiedFilters },
             moreSettings: {
               select: { label: 'UnifiedValue', id: 'UnifiedValue' },
               loadedOptions: (data) => state.loadedUnifiedValue = data
@@ -95,18 +107,13 @@ export default function controller(props: any, emit: any) {
           }
         },
         UnifiedValueDesc: {
-          value: null,
-          type: 'select',
+          value: '',
+          type: 'input',
           colClass: 'col-12 col-md-6 self-center',
           props: {
-            'fill-input': true,
-            'hide-selected': true,
+            readonly: !!state.unified.desc,
             label: 'Unified Value Description'
-          },
-          ...(state.formData?.UnifiedValue ? methods.getLoadOption({
-            name: 'UnifiedValueDesc',
-            moreFilters: { ...unifiedFilters, UnifiedValue: state.formData?.UnifiedValue }
-          }) : {})
+          }
         },
         UnifiedValue_GroupText: {
           type: 'text',
@@ -206,9 +213,20 @@ export default function controller(props: any, emit: any) {
       state.data = null;
       state.apiRoute = '';
       state.loading = false;
+      state.loadedUnifiedValue = [];
+      state.unified = {
+        value: null,
+        desc: null
+      };
     },
     //Get Load options
-    getLoadOption({ name, moreFilters = {}, apiRoute = 'apiRoutes.qmapper.references', filter = {}, moreSettings = {} }) {
+    getLoadOption({
+                    name,
+                    moreFilters = {},
+                    apiRoute = 'apiRoutes.qmapper.references',
+                    filter = {},
+                    moreSettings = {}
+                  }) {
       if (!Object.keys(filter)?.length) {
         filter = {
           _distinct: name,
@@ -233,47 +251,33 @@ export default function controller(props: any, emit: any) {
     },
     //Save data
     async submitData() {
-      console.warn('Submit: Yujuuu');
+      const data = state.data;
+      const formData = state.formData;
+      if (!data?.TableColumnValue) {
+        alert.error('No Source Value found');
+        return;
+      }
+
+      if (data?.id) {
+        await methods.updateData({ ...data, ...formData });
+      }
+
     },
-
-    //Fill in data for update
-    updateData(selectedBlock) {
-      // Cloning and setting selected block data
-      state.block = clone(selectedBlock);
-      //Get Block id to Update
-      state.idBlock = clone(selectedBlock.id);
-      //Get data to pass to Form
-      state.formBlock = clone(selectedBlock);
-
-      //Search the selected block configuration
-      state.configBlock = methods.getBlockConfig(selectedBlock.component?.systemName);
-
-      state.showModal = true;
-    },
-
     //Create Block
-    async createBlock(data, params) {
+    async updateData(data, params = {}) {
       state.loading = true;
 
-      service.createBlock(data, params).then(response => {
-        state.loading = false;
-        state.showModal = false;
-        data.id = response.id;
-
-        if (!!state.layoutId) {
-          const pivotData = response.layouts[0]?.blocks?.find(block => block.id == response.id);
-
-          if (pivotData) {
-            data.pivot = pivotData.pivot;
-          }
-
-          delete data.layouts;
-        }
-
-        emit('created', data);
+      await service.postData(state.apiRoute, { attributes: data }).then(response => {
+        const msg = response?.message || i18n.tr('isite.cms.message.recordCreated');
+        alert.info(msg);
+        emit('created');
+        methods.closeModal()
       }).catch(error => {
-        state.loading = false;
+        const msg = error?.response?.data?.errors?.message || i18n.tr('isite.cms.message.recordNoCreated');
+        alert.error(msg);
       });
+
+      state.loading = false;
     }
   };
 

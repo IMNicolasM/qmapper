@@ -1,5 +1,5 @@
 <template>
-  <master-modal v-model="showModal" width="822px"
+  <master-modal v-model="showModal" width="320px" custom-class="!tw-max-w-[822px]"
                 :title="data?.id ? `Editing: ${data.id}` : 'Create'"
                 :actions="modalActions" :loading="loading"
                 @hide="closeModal">
@@ -24,10 +24,10 @@
       <div class="row q-col-gutter-x-md q-mb-sm">
         <template v-for="(field, key) in formFields" :key="key">
           <div v-if="hidenFields(field)"
-               :class="field.colClass || field.columns || field.col || 'col-12'">
-            <ul v-if="field.type == 'text'" :class="field?.props?.class">
-              <li>{{ field?.props?.message }}</li>
-            </ul>
+               :class="`${field.colClass || field.columns || field.col || 'col-12'} q-mb-sm`">
+            <div v-if="field.type == 'text'" class="tw-flex tw-flex-nowrap tw-items-center tw-text-[#666666] tw-mb-3 md:tw-mt-2.5">
+              <div class="tw-w-1.5 tw-h-1.5 tw-rounded-full tw-bg-[#666666] tw-mx-1.5" /> {{ field?.props?.message }}
+            </div>
             <dynamic-field v-else :field="field" :item-id="field.fieldItemId"
                            v-model="formData[field.name || key]" />
           </div>
