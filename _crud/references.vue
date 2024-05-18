@@ -240,15 +240,7 @@ export default {
           title: 'Update Value',
           requestParams: {
             notToSnakeCase: [...this.notToSnakeCase, 'UNI_RuleID', 'Division']
-          },
-          customFormResponse: (criteria, formData, customParams) => {
-            return new Promise((resolve, reject) => {
-              this.$crud.post('apiRoutes.qmapper.references', { attributes: formData })
-                .then(response => resolve(response))
-                .catch(error => reject(error?.response?.data?.errors || {}));
-            });
-          },
-          useSystemMessage: true
+          }
         },
         handleFormUpdates: (formData, changedFields, formType) => {
           return new Promise(resolve => {

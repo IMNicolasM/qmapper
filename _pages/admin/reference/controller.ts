@@ -1,5 +1,7 @@
 import { reactive, toRefs, computed, ref } from 'vue';
+// @ts-ignore
 import crud from 'src/modules/qcrud/_components/crud.vue';
+// @ts-ignore
 import customForm from 'modules/qmapper/_components/customForm/index.vue'
 import { uid, store } from 'src/plugins/utils';
 
