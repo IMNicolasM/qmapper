@@ -1,6 +1,7 @@
 import { computed, reactive, ref, onMounted, toRefs } from 'vue';
 import service from './services';
 import { i18n, alert, cache } from 'src/plugins/utils';
+import { TAG_COLORS } from '../../_pages/admin/approval/constant';
 
 interface StateProps {
   showModal: boolean,
@@ -11,6 +12,8 @@ interface StateProps {
   loadedUnifiedValue: any[],
   unified: any,
   apiRouteDelete: string | null
+  isApprove: boolean,
+  action: string | null
 }
 
 export default function controller(props: any, emit: any) {
@@ -32,7 +35,9 @@ export default function controller(props: any, emit: any) {
       value: null,
       desc: null
     },
-    apiRouteDelete: null
+    apiRouteDelete: null,
+    isApprove: false,
+    action: null,
   });
 
   // Computed
@@ -60,7 +65,7 @@ export default function controller(props: any, emit: any) {
           col: 'col-12 col-md-6',
           vIf: false,
           props: {
-            message: `Select the match type for "${data?.TableColumnValue}"`
+            message: `Select the match type for "${computeds.sourceValue.value}"`
           }
         },
         MatchType: {
@@ -81,7 +86,7 @@ export default function controller(props: any, emit: any) {
           type: 'text',
           col: 'col-12 col-md-6',
           props: {
-            message: `Select the unified "${data?.TableColumnName}" for "<span class="tw-text-[#0092DB]">${data?.TableColumnValue}</span>"`
+            message: `Select the unified "${data?.TableColumnName}" for "<span class="tw-text-[#0092DB]">${computeds.sourceValue.value}</span>"`
           }
         },
         UnifiedValue: {
@@ -107,7 +112,7 @@ export default function controller(props: any, emit: any) {
           type: 'text',
           colClass: 'col-12 col-md-6',
           props: {
-            message: `Select the unified "${data?.TableColumnName} Description" for "<span class="tw-text-[#0092DB]">${data?.TableColumnValue}</span>"`
+            message: `Select the unified "${data?.TableColumnName} Description" for "<span class="tw-text-[#0092DB]">${computeds.sourceValue.value}</span>"`
           }
         },
         UnifiedValueDesc: {
@@ -123,7 +128,7 @@ export default function controller(props: any, emit: any) {
           type: 'text',
           col: 'col-12 col-md-6',
           props: {
-            message: `Select the unified "${data?.TableColumnName} Group" for "<span class="tw-text-[#0092DB]">${data?.TableColumnValue}</span>"`
+            message: `Select the unified "${data?.TableColumnName} Group" for "<span class="tw-text-[#0092DB]">${computeds.sourceValue.value}</span>"`
           }
         },
         UnifiedValue_Group: {
@@ -144,7 +149,7 @@ export default function controller(props: any, emit: any) {
           type: 'text',
           col: 'col-12 col-md-6',
           props: {
-            message: `Select the unified "${data?.TableColumnName} Category" for "<span class="tw-text-[#0092DB]">${data?.TableColumnValue}</span>"`
+            message: `Select the unified "${data?.TableColumnName} Category" for "<span class="tw-text-[#0092DB]">${computeds.sourceValue.value}</span>"`
           }
         },
         UnifiedValue_Category: {
@@ -160,6 +165,16 @@ export default function controller(props: any, emit: any) {
             name: 'UnifiedValue_Category',
             moreFilters: unifiedFilters
           }) : {})
+        },
+        RejectionComments: {
+          vIf: state.isApprove,
+          value: '',
+          type: 'input',
+          props: {
+            type: 'textarea',
+            rows: '3',
+            label: 'Leave a note'
+          }
         }
       };
     }),
@@ -176,25 +191,55 @@ export default function controller(props: any, emit: any) {
         },
         {
           props: {
-            label: 'Send Request',
-            color: 'secondary'
+            vIf: state.isApprove,
+            label: TAG_COLORS.DENIED.label,
+            style: `background-color: ${TAG_COLORS.DENIED.btnColor}`,
+            textColor: "white"
           },
-          action: () => refs?.formContent?.value.submit()
+          action: () => {
+            state.action = TAG_COLORS.DENIED.action
+            refs?.formContent?.value.submit()
+          }
+        },
+        {
+          props: {
+            label: state.isApprove ? TAG_COLORS.APPROVED.label : 'Send Request',
+            color: state.isApprove ? '' :'secondary',
+            style: `background-color: ${TAG_COLORS.APPROVED.btnColor}`,
+            textColor: "white"
+          },
+          action: () => {
+            state.action = TAG_COLORS.APPROVED.action
+            refs?.formContent?.value.submit()
+          }
         }
       ];
-    })
+    }),
+    //Get Source Value
+    sourceValue: computed(() => {
+      const data = state.data
+
+      return data?.TableColumnValue || data?.RuleValue || 'NULL'
+    }),
+    //Get Source Value Desc
+    sourceValueDesc: computed(() => {
+      const data = state.data
+
+      return data?.TableColumnValueDesc || data?.RuleValueDesc || 'NULL'
+    }),
   };
 
   // Methods
   const methods = {
     //Get data by Id
-    async getData({ id = null, apiRoute = '', apiRouteDelete = null }: { id: string | null, apiRoute: string, apiRouteDelete: string | null }) {
+    async getData({ id = null, apiRoute = '', apiRouteDelete = null, isApprove = false }: { id: string | null, apiRoute: string, apiRouteDelete: string | null, isApprove: boolean }) {
       if (!apiRoute?.length) return;
 
       state.apiRoute = apiRoute;
       state.apiRouteDelete = apiRouteDelete;
       state.showModal = true;
       state.loading = true;
+      state.isApprove = isApprove
 
       if (!!id) {
         await service.getDataCustom(apiRoute, id, { refresh: true, params: { include: 'tableName' } })
@@ -215,6 +260,7 @@ export default function controller(props: any, emit: any) {
     async closeModal() {
       if(state.apiRouteDelete) await cache.remove({allKey: state.apiRouteDelete})
       state.showModal = false;
+      state.isApprove = false;
       state.formData = {};
       state.data = null;
       state.apiRoute = '';
@@ -265,7 +311,19 @@ export default function controller(props: any, emit: any) {
       }
 
       if (data?.id) {
-        await methods.updateData({ ...data, ...formData });
+        let mappedData = {...formData};
+
+        if(state.isApprove) {
+          mappedData = {
+            ...mappedData,
+            RuleValue: formData.TableColumnValue,
+            RuleValueDesc: formData.TableColumnValueDesc
+          }
+          delete mappedData.TableColumnValue
+          delete mappedData.TableColumnValueDesc
+        }
+
+        await methods.updateData({ ...data, ...mappedData });
       }
 
     },

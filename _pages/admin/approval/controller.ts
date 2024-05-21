@@ -4,12 +4,15 @@ import crud from 'src/modules/qcrud/_components/crud.vue';
 import services from './services';
 import { i18n, store } from 'src/plugins/utils';
 import { TAG_COLORS } from './constant'
+// @ts-ignore
+import customForm from 'modules/qmapper/_components/customForm/index.vue'
 
 export default function controller() {
 
   // Refs
   const refs = {
-    crudComponent: ref(crud)
+    crudComponent: ref(crud),
+    referenceForm: ref(customForm)
   };
 
   // States
@@ -53,6 +56,9 @@ export default function controller() {
               format: (item) => item.ApprovalInd === TAG_COLORS.CANCELLED.action
             }
           ]
+        },
+        update: {
+          method: (item: any) => methods.openModal(item),
         }
       };
     }),
@@ -124,7 +130,11 @@ export default function controller() {
       state.comment = '';
       state.currentAction = '';
       state.attributes = {};
-    }
+    },
+    //Open form modal
+    openModal(item: any) {
+      refs.referenceForm.value?.getData({ id: item?.id, apiRoute: 'apiRoutes.qmapper.approvals', apiRouteDelete: 'apiRoutes.qmapper.references', isApprove: true })
+    },
   };
 
   return { ...refs, ...(toRefs(state)), ...computeds, ...methods };

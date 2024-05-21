@@ -1,5 +1,6 @@
 <template>
   <div>
+    <custom-form ref="referenceForm" @created="() => getDataTable(true)" />
     <master-modal
       v-model="show"
       id="masterModalAction"
@@ -27,10 +28,11 @@
 <script>
 import {defineComponent} from 'vue'
 import controller from 'src/modules/qmapper/_pages/admin/approval/controller'
+import customForm from '../../../_components/customForm/index.vue';
 
 export default defineComponent({
   props: {},
-  components: {},
+  components: { customForm },
   setup(props, {emit}) {
     return controller(props, emit)
   }

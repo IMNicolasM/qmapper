@@ -5,11 +5,10 @@
                 @hide="closeModal">
     <!--Title of the modal body-->
     <div class="column tw-gap-3 q-mt-md">
-      <h3 class="tw-text-base tw-text-[#0092DB] tw-font-semibold">Description: "{{ data?.TableColumnValueDesc }}"</h3>
+      <h3 class="tw-text-base tw-text-[#0092DB] tw-font-semibold">Description: "{{ sourceValueDesc }}"</h3>
 
       <p class="tw-text-[#444444] tw-text-sm">Please select the unified values for the "{{ data?.TableColumnName }}:
-        '{{ data?.TableColumnValue || 'NULL'
-        }}'"</p>
+        '{{ sourceValue }}'"</p>
     </div>
     <!--Form-->
     <q-form
