@@ -202,7 +202,7 @@ export default function controller() {
     },
     //Open form modal
     openModal(item: any) {
-      refs.referenceForm.value?.getData({ id: item?.id, apiRoute: 'apiRoutes.qmapper.references' })
+      refs.referenceForm.value?.getData({ id: item?.id, apiRoute: 'apiRoutes.qmapper.references', apiRouteDelete: 'apiRoutes.qmapper.approvals' })
     },
     async getDataTable(refresh = false) {
       await refs.crudComponent.value.getDataTable(refresh);

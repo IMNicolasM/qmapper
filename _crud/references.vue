@@ -1,5 +1,7 @@
 <template></template>
 <script>
+import { TAG_COLORS } from '../_pages/admin/approval/constant';
+
 export default {
   data() {
     return {
@@ -14,13 +16,7 @@ export default {
         entityName: config('main.qmapper.entityNames.references'),
         apiRoute: 'apiRoutes.qmapper.references',
         permission: 'imapper.references',
-        create: {
-          title: 'Create New Value',
-          requestParams: {
-            notToSnakeCase: this.notToSnakeCase
-          },
-          useSystemMessage: true
-        },
+        create: false,
         modalActions: {
           save: {
             props: {
@@ -44,6 +40,14 @@ export default {
               align: 'rigth',
               sortable: true,
               action: 'edit'
+            },
+            {
+              name: 'ApprovalInd',
+              label: 'Status',
+              field: row => row,
+              align: 'center',
+              sortable: true,
+              format: item => this.getTag(item)
             },
             {
               name: 'TableColumnName',
@@ -236,12 +240,6 @@ export default {
             }
           ]
         },
-        update: {
-          title: 'Update Value',
-          requestParams: {
-            notToSnakeCase: [...this.notToSnakeCase, 'UNI_RuleID', 'Division']
-          }
-        },
         handleFormUpdates: (formData, changedFields, formType) => {
           return new Promise(resolve => {
             if (changedFields.length === 1) {
@@ -296,7 +294,19 @@ export default {
           }
         }
       };
-    }
+    },
+    getTag(item) {
+      const ind = item.ApprovalInd || item?.MappingInd;
+
+      if (!ind) return '-';
+      const { bg, color } = TAG_COLORS[ind] || {
+        bg: '#B1E2FA',
+        color: '#156DAC'
+      };
+
+      // <i className="fa-solid fa-comment-dots"></i>
+      return `<span class="tw-border tw-py-0.5 tw-px-2 tw-rounded-md tw-font-bold" style="background-color: ${bg}; color: ${color}; font-size: 10px;">${ind}</span>`;
+    },
   }
 };
 </script>

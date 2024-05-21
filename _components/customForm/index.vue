@@ -1,6 +1,6 @@
 <template>
   <master-modal v-model="showModal" width="320px" custom-class="!tw-max-w-[822px]"
-                :title="data?.id ? `Editing: ${data.id}` : 'Create'"
+                :title="data?.id ? `Editing: ${data.id}` : ''"
                 :actions="modalActions" :loading="loading"
                 @hide="closeModal">
     <!--Title of the modal body-->
@@ -26,7 +26,7 @@
           <div v-if="hidenFields(field)"
                :class="`${field.colClass || field.columns || field.col || 'col-12'} q-mb-sm`">
             <div v-if="field.type == 'text'" class="tw-flex tw-flex-nowrap tw-items-center tw-text-[#666666] tw-mb-3 md:tw-mt-2.5">
-              <div class="tw-w-1.5 tw-h-1.5 tw-rounded-full tw-bg-[#666666] tw-mx-1.5" /> {{ field?.props?.message }}
+              <div class="tw-w-1.5 tw-h-1.5 tw-rounded-full tw-bg-[#666666] tw-mx-1.5" /> <div v-html="field?.props?.message || ''" ></div>
             </div>
             <dynamic-field v-else :field="field" :item-id="field.fieldItemId"
                            v-model="formData[field.name || key]" />

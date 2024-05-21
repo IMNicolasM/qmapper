@@ -1,6 +1,6 @@
 import { computed, reactive, ref, onMounted, toRefs } from 'vue';
 import service from './services';
-import { i18n, alert } from 'src/plugins/utils';
+import { i18n, alert, cache } from 'src/plugins/utils';
 
 interface StateProps {
   showModal: boolean,
@@ -9,7 +9,8 @@ interface StateProps {
   apiRoute: string,
   data: any,
   loadedUnifiedValue: any[],
-  unified: any
+  unified: any,
+  apiRouteDelete: string | null
 }
 
 export default function controller(props: any, emit: any) {
@@ -30,7 +31,8 @@ export default function controller(props: any, emit: any) {
     unified: {
       value: null,
       desc: null
-    }
+    },
+    apiRouteDelete: null
   });
 
   // Computed
@@ -56,6 +58,7 @@ export default function controller(props: any, emit: any) {
         MatchTypeText: {
           type: 'text',
           col: 'col-12 col-md-6',
+          vIf: false,
           props: {
             message: `Select the match type for "${data?.TableColumnValue}"`
           }
@@ -65,6 +68,7 @@ export default function controller(props: any, emit: any) {
           type: 'select',
           required: true,
           colClass: 'col-12 col-md-6',
+          vIf: false,
           props: {
             label: 'Match type*',
             options: [
@@ -77,7 +81,7 @@ export default function controller(props: any, emit: any) {
           type: 'text',
           col: 'col-12 col-md-6',
           props: {
-            message: `Select the unified "${data?.TableColumnName}" for "${data?.TableColumnValue}"`
+            message: `Select the unified "${data?.TableColumnName}" for "<span class="tw-text-[#0092DB]">${data?.TableColumnValue}</span>"`
           }
         },
         UnifiedValue: {
@@ -103,7 +107,7 @@ export default function controller(props: any, emit: any) {
           type: 'text',
           colClass: 'col-12 col-md-6',
           props: {
-            message: `Select the unified "${data?.TableColumnName} Description" for "${data?.TableColumnValue}"`
+            message: `Select the unified "${data?.TableColumnName} Description" for "<span class="tw-text-[#0092DB]">${data?.TableColumnValue}</span>"`
           }
         },
         UnifiedValueDesc: {
@@ -119,7 +123,7 @@ export default function controller(props: any, emit: any) {
           type: 'text',
           col: 'col-12 col-md-6',
           props: {
-            message: `Select the unified "${data?.TableColumnName} Group" for "${data?.TableColumnValue}"`
+            message: `Select the unified "${data?.TableColumnName} Group" for "<span class="tw-text-[#0092DB]">${data?.TableColumnValue}</span>"`
           }
         },
         UnifiedValue_Group: {
@@ -140,7 +144,7 @@ export default function controller(props: any, emit: any) {
           type: 'text',
           col: 'col-12 col-md-6',
           props: {
-            message: `Select the unified "${data?.TableColumnName} Category" for "${data?.TableColumnValue}"`
+            message: `Select the unified "${data?.TableColumnName} Category" for "<span class="tw-text-[#0092DB]">${data?.TableColumnValue}</span>"`
           }
         },
         UnifiedValue_Category: {
@@ -184,10 +188,11 @@ export default function controller(props: any, emit: any) {
   // Methods
   const methods = {
     //Get data by Id
-    async getData({ id = null, apiRoute = '' }: { id: string | null, apiRoute: string }) {
+    async getData({ id = null, apiRoute = '', apiRouteDelete = null }: { id: string | null, apiRoute: string, apiRouteDelete: string | null }) {
       if (!apiRoute?.length) return;
 
       state.apiRoute = apiRoute;
+      state.apiRouteDelete = apiRouteDelete;
       state.showModal = true;
       state.loading = true;
 
@@ -207,7 +212,8 @@ export default function controller(props: any, emit: any) {
       state.loading = false;
     },
     //Close Modal
-    closeModal() {
+    async closeModal() {
+      if(state.apiRouteDelete) await cache.remove({allKey: state.apiRouteDelete})
       state.showModal = false;
       state.formData = {};
       state.data = null;
