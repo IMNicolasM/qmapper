@@ -1,6 +1,6 @@
 import { computed, reactive, ref, toRefs } from 'vue';
 import service from './services';
-import { i18n, alert, cache } from 'src/plugins/utils';
+import { i18n, alert, cache, clone } from 'src/plugins/utils';
 import { PROPS_BUTTONS } from '../../_pages/admin/approval/constant';
 
 interface StateProps {
@@ -57,8 +57,9 @@ export default function controller(_props: any, emit: any) {
         const unified = state.formData.UnifiedValue;
         state.unified.value = state.formData.UnifiedValue;
         const desc = state.loadedUnifiedValue.find(uni => uni.UnifiedValue == unified)?.UnifiedValueDesc || '';
+        const dataValue = state.formData.UnifiedValueDesc || '';
         state.unified.desc = desc;
-        state.formData.UnifiedValueDesc = desc;
+        state.formData.UnifiedValueDesc = desc || dataValue;
       }
 
       return {
@@ -253,8 +254,8 @@ export default function controller(_props: any, emit: any) {
       if (!!id) {
         await service.getDataCustom(apiRoute, id, { refresh: true, params: { include: 'tableName' } })
           .then(res => {
-            state.data = res;
-            state.formData = res;
+            state.data = clone(res);
+            state.formData = clone(res);
           })
           .catch(e => {
             console.warn('Error Custom ', e);
@@ -324,14 +325,14 @@ export default function controller(_props: any, emit: any) {
       if (data?.id) {
         let mappedData = {
           ...formData,
-          TableColumnValueDesc: formData.TableColumnValueDesc || null
+          TableColumnValueDesc: data.TableColumnValueDesc || null
         };
 
         if (state.isApprove) {
           mappedData = {
             ...mappedData,
-            RuleValue: formData.TableColumnValue,
-            RuleValueDesc: formData.TableColumnValueDesc || null,
+            RuleValue: data.TableColumnValue,
+            RuleValueDesc: data.TableColumnValueDesc || null,
             ApprovalInd: state.action
           };
           delete mappedData.TableColumnValue;

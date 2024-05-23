@@ -38,23 +38,26 @@ export default function controller() {
               tooltip: 'Approve',
               name: 'approve',
               action: (item: any) => methods.showModal(PROPS_BUTTONS.APPROVED.action, item),
-              format: (item: any) => item.ApprovalInd === PROPS_BUTTONS.APPROVED.action
+              format: (item: any) => ({ vIf: store.hasAccess('imapper.approvals.acceptance') && item.ApprovalInd === PROPS_BUTTONS.REQUESTED.action })
             },
             {
               icon: 'fa-regular fa-ban',
-              vIf: store.hasAccess('imapper.approvals.acceptance'),
+              vIf: false,
               tooltip: 'Deny',
               name: 'deny',
               action: (item: any) => methods.showModal(PROPS_BUTTONS.DENIED.action, item),
-              format: (item: any) => item.ApprovalInd === PROPS_BUTTONS.DENIED.action
+              format: (item: any) => ({ vIf: store.hasAccess('imapper.approvals.acceptance') && item.ApprovalInd === PROPS_BUTTONS.REQUESTED.action })
             },
             {
               icon: 'fa-regular fa-ban',
-              vIf: store.hasAccess('imapper.approvals.cancel'),
+              vIf: false,
               tooltip: 'Cancel',
               name: 'cancel',
               action: (item: any) => methods.showModal(PROPS_BUTTONS.CANCELLED.action, item),
-              format: (item: any) => item.ApprovalInd === PROPS_BUTTONS.CANCELLED.action
+              format: (item: any) => ({
+                // @ts-ignore
+                vIf: item.ApprovalInd === PROPS_BUTTONS.REQUESTED.action && store?.state?.quserAuth?.userId == item.RuleCreatedBy
+              })
             }
           ]
         },

@@ -6,7 +6,7 @@ export default {
   data() {
     return {
       crudId: this.$uid(),
-      notToSnakeCase: ['Division', 'UNI_RefID', 'TableColumnName', 'TableColumnValue', 'TableColumnValueDesc', 'MatchType', 'TablePK_EDW', 'UnifiedValue', 'UnifiedValueDesc', 'UnifiedValue_Group', 'UnifiedValue_Category']
+      notToSnakeCase: ['ApprovalInd', 'Division', 'UNI_RefID', 'TableColumnName', 'TableColumnValue', 'TableColumnValueDesc', 'MatchType', 'TablePK_EDW', 'UnifiedValue', 'UnifiedValueDesc', 'UnifiedValue_Group', 'UnifiedValue_Category']
     };
   },
   computed: {
@@ -223,56 +223,7 @@ export default {
           disabled: {
             row: (item) => item?.countRequest > 0
           },
-          excludeActions: ['export', 'sync', 'recommendations'],
-          actions: [
-            {
-              name: 'edit',
-              format: (item) => (item?.countRequest > 0 ? { vIf: false } : {})
-            },
-            {
-              icon: 'fa-regular fa-timer',
-              label: 'Request Pending',
-              vIf: false,
-              action: (item) => {
-                this.$router.push({ name: 'qmapper.admin.approvals', params: {} });
-              },
-              format: (item) => (item?.countRequest > 0 ? { vIf: true } : {})
-            }
-          ]
-        },
-        handleFormUpdates: (formData, changedFields, formType) => {
-          return new Promise(resolve => {
-            if (changedFields.length === 1) {
-              if (changedFields.includes('TableName')) {
-                formData = {
-                  ...formData,
-                  TableColumnName: null,
-                  TableColumnValue: null,
-                  TableColumnValueDesc: null,
-                  UnifiedValue: null,
-                  UnifiedValueDesc: null,
-                  UnifiedValue_Group: null,
-                  UnifiedValue_Category: null
-                };
-              } else if (changedFields.includes('TableColumnName')) {
-                formData = {
-                  ...formData,
-                  TableColumnValue: null,
-                  TableColumnValueDesc: null,
-                  UnifiedValue: null,
-                  UnifiedValueDesc: null,
-                  UnifiedValue_Group: null,
-                  UnifiedValue_Category: null
-                };
-              } else if (changedFields.includes('UnifiedValue')) {
-                formData = {
-                  ...formData,
-                  UnifiedValueDesc: null
-                };
-              }
-            }
-            resolve(formData);
-          });
+          excludeActions: ['export', 'sync', 'recommendations']
         }
       };
     },

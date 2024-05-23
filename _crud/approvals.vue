@@ -23,7 +23,6 @@ export default {
               label: 'Status',
               field: row => row,
               align: 'center',
-              sortable: true,
               format: (item) => this.getTag(item)
             },
             {
@@ -242,7 +241,7 @@ export default {
       return `<div class="tw-py-0.5 tw-px-1" style="font-size: 13px;">
 <span class="tw-text-[#666] tw-line-through">${diffValue}</span>
 <br />
-<span class="tw-font-semibold" style="color: ${color};">${compareValue}</span>
+<span class="tw-font-semibold" style="color: ${color};">${compareValue || '-'}</span>
 </div>`;
     },
     //Get Load Option
