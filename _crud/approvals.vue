@@ -236,8 +236,6 @@ export default {
       if (compareValue == null) compareValue = String(compareValue).toUpperCase();
       if (diffValue == null) diffValue = String(diffValue).toUpperCase();
 
-      if(compareValue == diffValue) return  compareValue
-
       return `<div class="tw-py-0.5 tw-px-1" style="font-size: 13px;">
 <span class="tw-text-[#666] tw-line-through">${diffValue}</span>
 <br />
