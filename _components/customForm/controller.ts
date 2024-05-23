@@ -1,7 +1,7 @@
-import { computed, reactive, ref, onMounted, toRefs } from 'vue';
+import { computed, reactive, ref, toRefs } from 'vue';
 import service from './services';
 import { i18n, alert, cache } from 'src/plugins/utils';
-import { TAG_COLORS } from '../../_pages/admin/approval/constant';
+import { PROPS_BUTTONS } from '../../_pages/admin/approval/constant';
 
 interface StateProps {
   showModal: boolean,
@@ -13,10 +13,11 @@ interface StateProps {
   unified: any,
   apiRouteDelete: string | null
   isApprove: boolean,
+  customApiRoute: string,
   action: string | null
 }
 
-export default function controller(props: any, emit: any) {
+export default function controller(_props: any, emit: any) {
 
   // Refs
   const refs = {
@@ -37,7 +38,8 @@ export default function controller(props: any, emit: any) {
     },
     apiRouteDelete: null,
     isApprove: false,
-    action: null,
+    customApiRoute: '',
+    action: null
   });
 
   // Computed
@@ -104,7 +106,7 @@ export default function controller(props: any, emit: any) {
             filter: { _groupBy: 'UnifiedValue,UnifiedValueDesc', ...unifiedFilters },
             moreSettings: {
               select: { label: 'UnifiedValue', id: 'UnifiedValue' },
-              loadedOptions: (data) => state.loadedUnifiedValue = data
+              loadedOptions: (data: any) => state.loadedUnifiedValue = data
             }
           }) : {})
         },
@@ -192,54 +194,61 @@ export default function controller(props: any, emit: any) {
         {
           props: {
             vIf: state.isApprove,
-            label: TAG_COLORS.DENIED.label,
-            style: `background-color: ${TAG_COLORS.DENIED.btnColor}`,
-            textColor: "white"
+            label: PROPS_BUTTONS.DENIED.label,
+            style: `background-color: ${PROPS_BUTTONS.DENIED.btnColor}`,
+            textColor: 'white'
           },
           action: () => {
-            state.action = TAG_COLORS.DENIED.action
-            refs?.formContent?.value.submit()
+            state.action = PROPS_BUTTONS.DENIED.action;
+            refs?.formContent?.value.submit();
           }
         },
         {
           props: {
-            label: state.isApprove ? TAG_COLORS.APPROVED.label : 'Send Request',
-            color: state.isApprove ? '' :'secondary',
-            style: `background-color: ${TAG_COLORS.APPROVED.btnColor}`,
-            textColor: "white"
+            label: state.isApprove ? PROPS_BUTTONS.APPROVED.label : 'Send Request',
+            color: state.isApprove ? '' : 'secondary',
+            style: `background-color: ${PROPS_BUTTONS.APPROVED.btnColor}`,
+            textColor: 'white'
           },
           action: () => {
-            state.action = TAG_COLORS.APPROVED.action
-            refs?.formContent?.value.submit()
+            state.action = PROPS_BUTTONS.APPROVED.action;
+            refs?.formContent?.value.submit();
           }
         }
       ];
     }),
     //Get Source Value
     sourceValue: computed(() => {
-      const data = state.data
+      const data = state.data;
 
-      return data?.TableColumnValue || data?.RuleValue || 'NULL'
+      return data?.TableColumnValue || data?.RuleValue || 'NULL';
     }),
     //Get Source Value Desc
     sourceValueDesc: computed(() => {
-      const data = state.data
+      const data = state.data;
 
-      return data?.TableColumnValueDesc || data?.RuleValueDesc || 'NULL'
-    }),
+      return data?.TableColumnValueDesc || data?.RuleValueDesc || 'NULL';
+    })
   };
 
   // Methods
   const methods = {
     //Get data by Id
-    async getData({ id = null, apiRoute = '', apiRouteDelete = null, isApprove = false }: { id: string | null, apiRoute: string, apiRouteDelete: string | null, isApprove: boolean }) {
+    async getData({ id = null, apiRoute = '', apiRouteDelete = null, isApprove = false, customApiRoute = '' }: {
+      id: string | null,
+      apiRoute: string,
+      apiRouteDelete: string | null,
+      isApprove: boolean,
+      customApiRoute: string
+    }) {
       if (!apiRoute?.length) return;
 
       state.apiRoute = apiRoute;
       state.apiRouteDelete = apiRouteDelete;
       state.showModal = true;
       state.loading = true;
-      state.isApprove = isApprove
+      state.isApprove = isApprove;
+      state.customApiRoute = customApiRoute;
 
       if (!!id) {
         await service.getDataCustom(apiRoute, id, { refresh: true, params: { include: 'tableName' } })
@@ -251,25 +260,26 @@ export default function controller(props: any, emit: any) {
             console.warn('Error Custom ', e);
             alert.error({ message: i18n.tr('isite.cms.message.errorRequest'), pos: 'bottom' });
           });
-      } else {
-        state.formData = {};
       }
       state.loading = false;
+      if (!state.data) methods.closeModal();
     },
     //Close Modal
     async closeModal() {
-      if(state.apiRouteDelete) await cache.remove({allKey: state.apiRouteDelete})
+      if (state.apiRouteDelete) await cache.remove({ allKey: state.apiRouteDelete });
       state.showModal = false;
       state.isApprove = false;
       state.formData = {};
       state.data = null;
       state.apiRoute = '';
+      state.customApiRoute = '';
       state.loading = false;
       state.loadedUnifiedValue = [];
       state.unified = {
         value: null,
         desc: null
       };
+      state.action = null;
     },
     //Get Load options
     getLoadOption({
@@ -305,22 +315,27 @@ export default function controller(props: any, emit: any) {
     async submitData() {
       const data = state.data;
       const formData = state.formData;
-      if (!data?.TableColumnValue) {
+
+      if (!state.isApprove && !data?.TableColumnValue) {
         alert.error('No Source Value found');
         return;
       }
 
       if (data?.id) {
-        let mappedData = {...formData};
+        let mappedData = {
+          ...formData,
+          TableColumnValueDesc: formData.TableColumnValueDesc || null
+        };
 
-        if(state.isApprove) {
+        if (state.isApprove) {
           mappedData = {
             ...mappedData,
             RuleValue: formData.TableColumnValue,
-            RuleValueDesc: formData.TableColumnValueDesc
-          }
-          delete mappedData.TableColumnValue
-          delete mappedData.TableColumnValueDesc
+            RuleValueDesc: formData.TableColumnValueDesc || null,
+            ApprovalInd: state.action
+          };
+          delete mappedData.TableColumnValue;
+          delete mappedData.TableColumnValueDesc;
         }
 
         await methods.updateData({ ...data, ...mappedData });
@@ -328,14 +343,16 @@ export default function controller(props: any, emit: any) {
 
     },
     //Create Block
-    async updateData(data, params = {}) {
+    async updateData(data: any) {
       state.loading = true;
 
-      await service.postData(state.apiRoute, { attributes: data }).then(response => {
+      const apiRoute = state.customApiRoute || state.apiRoute;
+
+      await service.postData(apiRoute, { attributes: data }).then((response: any) => {
         const msg = response?.message || i18n.tr('isite.cms.message.recordCreated');
         alert.info(msg);
         emit('created');
-        methods.closeModal()
+        methods.closeModal();
       }).catch(error => {
         const msg = error?.response?.data?.errors?.message || i18n.tr('isite.cms.message.recordNoCreated');
         alert.error(msg);
@@ -344,15 +361,6 @@ export default function controller(props: any, emit: any) {
       state.loading = false;
     }
   };
-
-  // Mounted
-  onMounted(() => {
-  });
-
-  // Watch
-  // watch(key, (newField, oldField): void => {
-  //
-  // }, {deep: true})
 
   return { ...refs, ...(toRefs(state)), ...computeds, ...methods };
 }

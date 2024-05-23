@@ -1,6 +1,6 @@
 <template></template>
 <script>
-import { TEST_USERS as users, TAG_COLORS } from 'src/modules/qmapper/_pages/admin/approval/constant';
+import { PROPS_BUTTONS } from 'src/modules/qmapper/_pages/admin/approval/constant';
 
 export default {
   data() {
@@ -10,30 +10,12 @@ export default {
   },
   computed: {
     crudData() {
-      const crudInfo = this.crudInfo;
-
-      const unifiedFilters = { TableColumnName: crudInfo?.TableColumnName, Division: crudInfo?.Division };
-
       return {
         crudId: this.crudId,
         entityName: config('main.qmapper.entityNames.approvals'),
         apiRoute: 'apiRoutes.qmapper.approvals',
         permission: 'imapper.approvals',
         create: false,
-        modalActions: {
-          save: {
-            props: {
-              label: 'Save',
-              color: 'secondary'
-            }
-          },
-          cancel: {
-            props: {
-              outline: true,
-              color: 'secondary'
-            }
-          }
-        },
         read: {
           columns: [
             {
@@ -47,10 +29,10 @@ export default {
             {
               name: 'RuleCreatedBy',
               label: 'Requester',
-              field: 'RuleCreatedBy',
+              field: row => row,
               sortable: true,
               align: 'center',
-              format: val => users[val] || 'NAN'
+              format: val => val.userNameCreated || val.RuleCreatedBy || 'NAN'
             },
             {
               name: 'TableColumnName',
@@ -226,215 +208,8 @@ export default {
             notToSnakeCase: ['ApprovalInd', 'RuleCreatedBy', 'TableColumnName', 'RuleValue', 'RuleValueDesc', 'MatchType', 'UnifiedValue', 'UnifiedValueDesc', 'UnifiedValue_Group', 'UnifiedValue_Category', 'RuleCreatedDate']
           },
           excludeActions: ['export', 'sync', 'recommendations']
-        },
-        update: {
-          title: 'Editing',
-          customFormResponse: (criteria, formData, customParams) => {
-            return new Promise((resolve, reject) => {
-              this.$crud.post(`${config('apiRoutes.qmapper.approvals')}/action`, {
-                editing: true,
-                attributes: formData
-              })
-                .then(response => resolve(response))
-                .catch(error => reject(error?.response?.data?.errors || {}));
-            });
-          }
-        },
-        formLeft: {
-          SeqNo: { value: '' },
-          UNI_RuleID: { value: '' },
-          UNI_MetaID: { value: '' },
-          SourceSystem: {
-            value: null,
-            type: 'select',
-            props: {
-              label: 'Source Application'
-            },
-            ...this.getLoadOption({ name: 'SourceSystem' })
-          },
-          Division: {
-            value: '',
-            type: 'input',
-            props: {
-              readonly: true,
-              label: 'Division'
-            }
-          },
-          TableName: {
-            value: null,
-            type: 'select',
-            props: {
-              label: 'Table Name',
-              readonly: true
-            },
-            ...this.getLoadOption({
-              apiRoute: 'apiRoutes.qmapper.metadata',
-              select: { label: 'SubjectArea', id: 'TableName' }
-            })
-          },
-          TableColumnName: {
-            value: '',
-            type: 'input',
-            props: {
-              label: 'Source Column',
-              readonly: true
-            },
-          },
-          RuleValue: {
-            value: '',
-            type: 'input',
-            required: true,
-            props: {
-              readonly: true,
-              label: 'Source Value'
-            }
-          },
-          RuleValueDesc: {
-            value: '',
-            type: 'input',
-            props: {
-              label: 'Source Value Description'
-            }
-          },
-          MatchType: {
-            value: 'EXACT',
-            type: 'select',
-            required: true,
-            props: {
-              label: 'Match type*',
-              options: [
-                { label: 'Exact Match', value: 'EXACT' }
-                // { label: 'PATTERN', value: 'PATTERN' }
-              ]
-            }
-          }
-        },
-        formRight: {
-          UnifiedValue: {
-            value: null,
-            type: 'select',
-            required: true,
-            props: {
-              'fill-input': true,
-              'hide-selected': true,
-              label: 'Unified Value'
-            },
-            ...this.getLoadOption({
-              name: 'UnifiedValue',
-              moreFilters: unifiedFilters
-            })
-          },
-          UnifiedValueDesc: {
-            value: null,
-            type: 'select',
-            required: true,
-            props: {
-              'fill-input': true,
-              'hide-selected': true,
-              label: 'Unified Value Description'
-            },
-            ...this.getLoadOption({
-              name: 'UnifiedValueDesc',
-              moreFilters: { ...unifiedFilters, UnifiedValue: crudInfo?.UnifiedValue }
-            })
-          },
-          UnifiedValue_Group: {
-            value: null,
-            type: 'select',
-            props: {
-              'fill-input': true,
-              'hide-selected': true,
-              label: 'Unified Value Group'
-            },
-            ...this.getLoadOption({
-              name: 'UnifiedValue_Group',
-              moreFilters: unifiedFilters
-            })
-          },
-          UnifiedValue_Category: {
-            value: null,
-            type: 'select',
-            props: {
-              'fill-input': true,
-              'hide-selected': true,
-              label: 'Unified Value Category'
-            },
-            ...this.getLoadOption({
-              name: 'UnifiedValue_Group',
-              moreFilters: unifiedFilters
-            })
-          },
-          ApprovalInd: {
-            value: 'APPROVED',
-            type: 'select',
-            required: true,
-            props: {
-              label: 'Mapping indicator',
-              options: [
-                { label: 'DENIED', value: 'DENIED' },
-                { label: 'APPROVED', value: 'APPROVED' }
-              ]
-            }
-          },
-          RulePriority: {
-            value: 1,
-            type: 'input',
-            required: true,
-            props: {
-              label: 'Rule Priority',
-              type: 'number'
-            }
-          },
-          RejectionComments: {
-            value: '',
-            type: 'input',
-            props: {
-              type: 'textarea',
-              rows: '3',
-              label: 'Leave a note'
-            }
-          }
-        },
-        handleFormUpdates: (formData, changedFields, formType) => {
-          return new Promise(resolve => {
-            if (changedFields.length === 1) {
-              if (changedFields.includes('TableName')) {
-                formData = {
-                  ...formData,
-                  UNI_MetaID: null,
-                  TableColumnName: null,
-                  RuleValue: null,
-                  RuleValueDesc: '',
-                  UnifiedValue: null,
-                  UnifiedValueDesc: null,
-                  UnifiedValue_Group: null,
-                  UnifiedValue_Category: null
-                };
-              } else if (changedFields.includes('TableColumnName')) {
-                formData = {
-                  ...formData,
-                  RuleValue: null,
-                  RuleValueDesc: '',
-                  UnifiedValue: null,
-                  UnifiedValueDesc: null,
-                  UnifiedValue_Group: null,
-                  UnifiedValue_Category: null
-                };
-              } else if (changedFields.includes('UnifiedValue')) {
-                formData = {
-                  ...formData,
-                  UnifiedValueDesc: null
-                };
-              }
-            }
-            resolve(formData);
-          });
         }
       };
-    },
-    //Crud info
-    crudInfo() {
-      return this.$store.state.qcrudComponent.component[this.crudId] || {};
     }
   },
   methods: {
@@ -442,10 +217,7 @@ export default {
     getTag(item) {
       const ind = item.ApprovalInd;
       if (!ind) return '-';
-      const { bg, color } = TAG_COLORS[ind] || {
-        bg: '#B1E2FA',
-        color: '#156DAC'
-      };
+      const { bg, color } = PROPS_BUTTONS[ind] || PROPS_BUTTONS.DEFAULT
 
       // <i className="fa-solid fa-comment-dots"></i>
       return `<span class="tw-border tw-py-0.5 tw-px-2 tw-rounded-md tw-font-bold" style="background-color: ${bg}; color: ${color}; font-size: 10px;">${ind}</span>`;
@@ -460,12 +232,12 @@ export default {
       let compareValue = row[column];
       let diffValue = row[columnToCompare];
 
-      const { color } = TAG_COLORS[row[columnColor]] || {
-        color: '#156DAC'
-      };
+      const { color } = PROPS_BUTTONS[row[columnColor]] || PROPS_BUTTONS.DEFAULT;
 
       if (compareValue == null) compareValue = String(compareValue).toUpperCase();
       if (diffValue == null) diffValue = String(diffValue).toUpperCase();
+
+      if(compareValue == diffValue) return  compareValue
 
       return `<div class="tw-py-0.5 tw-px-1" style="font-size: 13px;">
 <span class="tw-text-[#666] tw-line-through">${diffValue}</span>

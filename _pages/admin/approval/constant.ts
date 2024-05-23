@@ -1,4 +1,4 @@
-export const TAG_COLORS = {
+export const PROPS_BUTTONS = {
   REQUESTED: {
     bg: '#BBC9FE',
     color: '#3040C2',
@@ -24,9 +24,11 @@ export const TAG_COLORS = {
     action: 'CANCELLED',
     label: 'Cancel Request',
     btnColor: '#C42C27'
+  },
+  DEFAULT: {
+    btnColor: 'gray',
+    bg: '#B1E2FA',
+    color: '#156DAC',
+    label: 'None',
   }
-};
-export const TEST_USERS = {
-  2: 'Reunity Test',
-  1: 'Reunity Admin'
 };

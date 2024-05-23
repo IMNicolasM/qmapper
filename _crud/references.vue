@@ -1,6 +1,6 @@
 <template></template>
 <script>
-import { TAG_COLORS } from '../_pages/admin/approval/constant';
+import { PROPS_BUTTONS } from '../_pages/admin/approval/constant';
 
 export default {
   data() {
@@ -299,7 +299,7 @@ export default {
       const ind = item.ApprovalInd || item?.MappingInd;
 
       if (!ind) return '-';
-      const { bg, color } = TAG_COLORS[ind] || {
+      const { bg, color } = PROPS_BUTTONS[ind] || {
         bg: '#B1E2FA',
         color: '#156DAC'
       };

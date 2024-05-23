@@ -51,4 +51,7 @@ export default defineComponent({
 });
 </script>
 <style lang="scss">
+.master-dialog .master-dialog__body {
+  max-height: calc(100vh - 240px);
+}
 </style>

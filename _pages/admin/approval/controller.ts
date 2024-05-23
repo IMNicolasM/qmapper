@@ -3,9 +3,10 @@ import { reactive, toRefs, computed, ref } from 'vue';
 import crud from 'src/modules/qcrud/_components/crud.vue';
 import services from './services';
 import { i18n, store } from 'src/plugins/utils';
-import { TAG_COLORS } from './constant'
+import { PROPS_BUTTONS } from './constant';
 // @ts-ignore
-import customForm from 'modules/qmapper/_components/customForm/index.vue'
+import customForm from 'modules/qmapper/_components/customForm/index.vue';
+import { alert, cache } from '../../../../../plugins/utils';
 
 export default function controller() {
 
@@ -36,41 +37,41 @@ export default function controller() {
               vIf: store.hasAccess('imapper.approvals.acceptance'),
               tooltip: 'Approve',
               name: 'approve',
-              action: (item: any) => methods.showModal(TAG_COLORS.APPROVED.action, item),
-              format: (item) => item.ApprovalInd === TAG_COLORS.APPROVED.action
+              action: (item: any) => methods.showModal(PROPS_BUTTONS.APPROVED.action, item),
+              format: (item: any) => item.ApprovalInd === PROPS_BUTTONS.APPROVED.action
             },
             {
               icon: 'fa-regular fa-ban',
               vIf: store.hasAccess('imapper.approvals.acceptance'),
               tooltip: 'Deny',
               name: 'deny',
-              action: (item) => methods.showModal(TAG_COLORS.DENIED.action, item),
-              format: (item) => item.ApprovalInd === TAG_COLORS.DENIED.action
+              action: (item: any) => methods.showModal(PROPS_BUTTONS.DENIED.action, item),
+              format: (item: any) => item.ApprovalInd === PROPS_BUTTONS.DENIED.action
             },
             {
               icon: 'fa-regular fa-ban',
               vIf: store.hasAccess('imapper.approvals.cancel'),
               tooltip: 'Cancel',
               name: 'cancel',
-              action: (item) => methods.showModal(TAG_COLORS.CANCELLED.action, item),
-              format: (item) => item.ApprovalInd === TAG_COLORS.CANCELLED.action
+              action: (item: any) => methods.showModal(PROPS_BUTTONS.CANCELLED.action, item),
+              format: (item: any) => item.ApprovalInd === PROPS_BUTTONS.CANCELLED.action
             }
           ]
         },
         update: {
-          method: (item: any) => methods.openModal(item),
+          method: (item: any) => methods.openModal(item)
         }
       };
     }),
     modalActions: computed(() => {
-      const infoAction = TAG_COLORS[state.currentAction] || { btnColor: 'gray', label: 'None'};
+      const infoAction = PROPS_BUTTONS[state.currentAction] || PROPS_BUTTONS.DEFAULT;
 
       return [
         {
           props: {
             label: i18n.tr('isite.cms.label.cancel'),
             color: 'grey-4',
-            textColor: "grey-9"
+            textColor: 'grey-9'
           },
           action: () => state.show = false
         },
@@ -78,7 +79,7 @@ export default function controller() {
           props: {
             label: infoAction.label,
             style: `background-color: ${infoAction.btnColor}`,
-            textColor: "white"
+            textColor: 'white'
           },
           action: () => {
             methods.sendAction(state.currentAction, state.attributes);
@@ -104,17 +105,20 @@ export default function controller() {
     //Send action
     async sendAction(action: string, att: any) {
       try {
-        state.loading = true
+        state.loading = true;
         state.show = false;
         const attributes = {
           ...att,
+          ApprovalInd: action,
           RejectionComments: state.comment
         };
-        await services.sendActionRuleApprove({ action, attributes });
-        state.loading = false
+        await services.sendActionRuleApprove({ attributes });
+        await cache.remove({ allKey: 'apiRoutes.qmapper.references' });
+        state.loading = false;
         await methods.getDataTable(true);
       } catch (e) {
-        state.loading = false
+        state.loading = false;
+        alert.error({ message: i18n.tr('isite.cms.message.errorRequest'), pos: 'bottom' });
         console.error(e);
       }
     },
@@ -133,8 +137,16 @@ export default function controller() {
     },
     //Open form modal
     openModal(item: any) {
-      refs.referenceForm.value?.getData({ id: item?.id, apiRoute: 'apiRoutes.qmapper.approvals', apiRouteDelete: 'apiRoutes.qmapper.references', isApprove: true })
-    },
+
+      refs.referenceForm.value?.getData({
+        // @ts-ignore
+        customApiRoute: `${config('apiRoutes.qmapper.approvals')}/action`,
+        isApprove: true,
+        id: item?.id,
+        apiRoute: 'apiRoutes.qmapper.approvals',
+        apiRouteDelete: 'apiRoutes.qmapper.references'
+      });
+    }
   };
 
   return { ...refs, ...(toRefs(state)), ...computeds, ...methods };
