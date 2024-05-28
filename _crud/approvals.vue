@@ -26,6 +26,13 @@ export default {
               format: (item) => this.getTag(item)
             },
             {
+              name: 'Division',
+              label: 'Division',
+              field: 'Division',
+              align: 'rigth',
+              sortable: true
+            },
+            {
               name: 'RuleCreatedBy',
               label: 'Requester',
               field: row => row,
@@ -266,7 +273,7 @@ export default {
     },
     //Return date
     getDate(val) {
-      const date = this.$trd(val, { fromUTC: true, type: 'long' }).split('at');
+      const date = this.$trd(val, { fromUTC: false, type: 'long' }).split('at');
 
       return `<div>
 <span><b>Date:</b> ${date[0]}</span>
