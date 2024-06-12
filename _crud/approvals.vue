@@ -5,7 +5,8 @@ import { PROPS_BUTTONS } from 'src/modules/qmapper/_pages/admin/approval/constan
 export default {
   data() {
     return {
-      crudId: this.$uid()
+      crudId: this.$uid(),
+      notToSnakeCase: ['approvalInd', 'division', 'ruleCreatedBy', 'tableColumnName', 'ruleCreatedDate', 'ruleValue', 'ruleValueDesc', 'matchType', 'unifiedValue', 'unifiedValueDesc', 'unifiedValueGroup', 'unifiedValueCategory']
     };
   },
   computed: {
@@ -19,137 +20,150 @@ export default {
         read: {
           columns: [
             {
-              name: 'ApprovalInd',
+              name: 'approvalInd',
               label: 'Status',
               field: row => row,
               align: 'center',
               format: (item) => this.getTag(item)
             },
             {
-              name: 'Division',
+              name: 'division',
               label: 'Division',
-              field: 'Division',
+              field: 'division',
               align: 'rigth',
               sortable: true
             },
             {
-              name: 'RuleCreatedBy',
+              name: 'ruleCreatedBy',
               label: 'Requester',
-              field: row => row,
+              field: 'userCreated',
               sortable: true,
               align: 'center',
-              format: val => val.userNameCreated || val.RuleCreatedBy || 'NAN'
+              format: val => val?.fullName || 'NAN'
             },
             {
-              name: 'TableColumnName',
+              name: 'tableColumnName',
               label: 'Source Column',
-              field: 'TableColumnName',
+              field: 'tableColumnName',
               align: 'center',
               sortable: true,
               action: 'edit'
             },
             {
-              name: 'RuleCreatedDate',
+              name: 'ruleCreatedDate',
               label: 'Date',
-              field: 'RuleCreatedDate',
+              field: 'ruleCreatedDate',
               align: 'center',
               sortable: true,
               format: val => val ? this.getDate(val) : '-',
             },
             {
-              name: 'RuleValue',
+              name: 'ruleValue',
               label: 'Source Value',
               field: row => row,
               sortable: true,
               align: 'center',
-              format: (val) => this.formatRowDiff(val, 'RuleValue', 'refTableColumnValue')
+              format: (val) => this.formatRowDiff(val, 'ruleValue', 'tableColumnValue')
             },
             {
-              name: 'RuleValueDesc',
+              name: 'ruleValueDesc',
               label: 'Source Value Description',
               field: row => row,
               sortable: true,
               align: 'center',
-              format: (val) => this.formatRowDiff(val, 'RuleValueDesc', 'refTableColumnValueDesc')
+              format: (val) => this.formatRowDiff(val, 'ruleValueDesc', 'tableColumnValueDesc')
             },
             {
-              name: 'MatchType',
+              name: 'matchType',
               label: 'Match type',
               field: row => row,
               align: 'center',
-              format: (val) => this.formatRowDiff(val, 'MatchType')
+              format: (val) => this.formatRowDiff(val, 'matchType')
             },
             {
-              name: 'UnifiedValue',
+              name: 'unifiedValue',
               label: 'Unified Value',
               field: row => row,
               sortable: true,
               align: 'center',
-              format: (val) => this.formatRowDiff(val, 'UnifiedValue')
+              format: (val) => this.formatRowDiff(val, 'unifiedValue')
             },
             {
-              name: 'UnifiedValueDesc',
+              name: 'unifiedValueDesc',
               label: 'Unified Value Desc',
               field: row => row,
               align: 'center',
-              format: (val) => this.formatRowDiff(val, 'UnifiedValueDesc')
+              format: (val) => this.formatRowDiff(val, 'unifiedValueDesc')
             },
             {
-              name: 'UnifiedValue_Group',
+              name: 'unifiedValueGroup',
               label: 'Unified Value Group',
               field: row => row,
               sortable: true,
               align: 'center',
-              format: (val) => this.formatRowDiff(val, 'UnifiedValue_Group')
+              format: (val) => this.formatRowDiff(val, 'unifiedValueGroup')
             },
             {
-              name: 'UnifiedValue_Category',
+              name: 'unifiedValueCategory',
               label: 'Unified Value Category',
               field: row => row,
               sortable: true,
               align: 'center',
-              format: (val) => this.formatRowDiff(val, 'UnifiedValue_Category')
+              format: (val) => this.formatRowDiff(val, 'unifiedValueCategory')
             },
             { name: 'actions', label: this.$tr('isite.cms.form.actions'), align: 'left' }
           ],
           filters: {
-            UnifiedValue: {
+            unifiedValue: {
               value: null,
               type: 'select',
               props: {
                 label: 'Unified Value',
                 clearable: true
               },
-              ...this.getLoadOption({ name: 'UnifiedValue' })
+              ...this.getLoadOption('unifiedValue')
             },
-            UnifiedValueDesc: {
+            unifiedValueDesc: {
               value: null,
               type: 'select',
               props: {
                 label: 'Unified Value Description',
                 clearable: true
               },
-              ...this.getLoadOption({ name: 'UnifiedValueDesc' })
+              ...this.getLoadOption('unifiedValueDesc')
             },
-            UnifiedValue_Group: {
+            unifiedValueGroup: {
               value: null,
               type: 'select',
               props: {
                 label: 'Unified Value Group',
                 clearable: true
               },
-              ...this.getLoadOption({ name: 'UnifiedValue_Group' })
+              ...this.getLoadOption('unifiedValueGroup')
             },
-            UnifiedValue_Category: {
+            unifiedValueCategory: {
               value: null,
               type: 'select',
               props: {
                 label: 'Unified Value Category',
                 clearable: true
               },
-              ...this.getLoadOption({ name: 'UnifiedValue_Category' })
+              ...this.getLoadOption('unifiedValueCategory')
             },
-            ApprovalInd: {
+            tableName: {
+              value: null,
+              type: 'select',
+              quickFilter: true,
+              props: {
+                label: 'Subject Area',
+                clearable: true
+              },
+              loadOptions: {
+                apiRoute: 'apiRoutes.qmapper.metadata',
+                select: { label: 'subjectArea', id: 'tableName' }
+              }
+            },
+            approvalInd: {
               value: 'REQUESTED',
               type: 'select',
               quickFilter: true,
@@ -163,20 +177,7 @@ export default {
                 ]
               }
             },
-            TableName: {
-              value: null,
-              type: 'select',
-              quickFilter: true,
-              props: {
-                label: 'Subject Area',
-                clearable: true
-              },
-              loadOptions: {
-                apiRoute: 'apiRoutes.qmapper.metadata',
-                select: { label: 'SubjectArea', id: 'TableName' }
-              }
-            },
-            Division: {
+            division: {
               value: 'ALL',
               type: 'select',
               quickFilter: true,
@@ -188,11 +189,11 @@ export default {
               },
               loadOptions: {
                 apiRoute: 'apiRoutes.qmapper.references',
-                select: { label: 'Division', id: 'Division' },
-                requestParams: { filter: { _distinct: 'Division' } }
+                select: { label: 'division', id: 'division' },
+                requestParams: { filter: { _distinct: 'division' } }
               }
             },
-            SourceSystem: {
+            sourceSystem: {
               value: 'ALL',
               type: 'select',
               quickFilter: true,
@@ -204,14 +205,14 @@ export default {
               },
               loadOptions: {
                 apiRoute: 'apiRoutes.qmapper.metadata',
-                select: { label: 'SourceSystem', id: 'SourceSystem' },
-                requestParams: { filter: { _distinct: 'SourceSystem' } }
+                select: { label: 'sourceSystem', id: 'sourceSystem' },
+                requestParams: { filter: { _distinct: 'sourceSystem' } }
               }
             }
           },
           requestParams: {
-            include: 'reference',
-            notToSnakeCase: ['ApprovalInd', 'RuleCreatedBy', 'TableColumnName', 'RuleValue', 'RuleValueDesc', 'MatchType', 'UnifiedValue', 'UnifiedValueDesc', 'UnifiedValue_Group', 'UnifiedValue_Category', 'RuleCreatedDate']
+            notToSnakeCase: this.notToSnakeCase,
+            include: 'reference,userCreated'
           },
           excludeActions: ['export', 'sync', 'recommendations']
         }
@@ -221,7 +222,7 @@ export default {
   methods: {
     //Tag to show status
     getTag(item) {
-      const ind = item.ApprovalInd;
+      const ind = item.approvalInd;
       if (!ind) return '-';
       const { bg, color } = PROPS_BUTTONS[ind] || PROPS_BUTTONS.DEFAULT
 
@@ -229,14 +230,14 @@ export default {
       return `<span class="tw-border tw-py-0.5 tw-px-2 tw-rounded-md tw-font-bold" style="background-color: ${bg}; color: ${color}; font-size: 10px;">${ind}</span>`;
     },
     //Compare style of column
-    formatRowDiff(row, column, diffColumn = '', columnColor = 'ApprovalInd') {
+    formatRowDiff(row, column, diffColumn = '', columnColor = 'approvalInd') {
       if (!row || !column) return '-';
 
       let columnToCompare = diffColumn;
 
-      if (!diffColumn?.length) columnToCompare = `ref${column}`;
+      if (!diffColumn?.length) columnToCompare = column;
       let compareValue = row[column];
-      let diffValue = row[columnToCompare];
+      let diffValue = !!row?.reference ? row?.reference[columnToCompare] : "-";
 
       const { color } = PROPS_BUTTONS[row[columnColor]] || PROPS_BUTTONS.DEFAULT;
 

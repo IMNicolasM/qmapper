@@ -5,7 +5,8 @@ import { PROPS_BUTTONS } from '../_pages/admin/approval/constant';
 export default {
   data() {
     return {
-      crudId: this.$uid()
+      crudId: this.$uid(),
+      notToSnakeCase: ['approvalInd', 'division', 'tableColumnName', 'tableColumnValue', 'tableColumnValueDesc', 'matchType', 'unifiedValue', 'unifiedValueDesc', 'unifiedValueGroup', 'unifiedValueCategory']
     };
   },
   computed: {
@@ -216,6 +217,7 @@ export default {
             }
           },
           requestParams: {
+            notToSnakeCase: this.notToSnakeCase,
             include: 'requested',
             filter: {
               tableColumnValue: {

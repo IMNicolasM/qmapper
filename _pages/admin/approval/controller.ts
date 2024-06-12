@@ -33,6 +33,11 @@ export default function controller() {
         read: {
           actions: [
             {
+              name: 'edit',
+              action: (item: any) => methods.openModal(item),
+              format: (item: any) => (!!item?.requested ? { vIf: false } : {})
+            },
+            {
               icon: 'fa-regular fa-circle-check',
               vIf: store.hasAccess('imapper.approvals.acceptance'),
               tooltip: 'Approve',
@@ -61,9 +66,7 @@ export default function controller() {
             }
           ]
         },
-        update: {
-          method: (item: any) => methods.openModal(item)
-        }
+        update: {}
       };
     }),
     modalActions: computed(() => {
@@ -145,9 +148,14 @@ export default function controller() {
         // @ts-ignore
         customApiRoute: `${config('apiRoutes.qmapper.approvals')}/action`,
         isApprove: true,
-        id: item?.id,
+        id: item?.seqNo,
         apiRoute: 'apiRoutes.qmapper.approvals',
-        apiRouteDelete: 'apiRoutes.qmapper.references'
+        apiRouteDelete: 'apiRoutes.qmapper.references',
+        params: {
+          filter: {
+            field: "SeqNo"
+          }
+        }
       });
     }
   };

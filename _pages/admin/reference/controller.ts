@@ -39,7 +39,7 @@ export default function controller() {
               action: () => {
                 this.$router.push({ name: 'qmapper.admin.approvals', params: {} });
               },
-              format: (item: any) => (item?.countRequest > 0 ? { vIf: true } : {})
+              format: (item: any) => (!!item?.requested ? { vIf: true } : {})
             },
             {
               icon: 'fa-regular fa-ban',
@@ -49,7 +49,7 @@ export default function controller() {
               action: (item: any) => methods.quickCancel(item.SeqNo),
               format: (item: any) => ({
                 // @ts-ignore
-                vIf: item.ApprovalInd === PROPS_BUTTONS.REQUESTED.action && store?.state?.quserAuth?.userId == item.RuleCreatedBy
+                vIf: item?.requested?.approvalInd === PROPS_BUTTONS.REQUESTED.action && store?.state?.quserAuth?.userId == item?.requested?.ruleCreatedBy
               })
             }
           ]
