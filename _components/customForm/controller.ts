@@ -7,6 +7,7 @@ interface StateProps {
   showModal: boolean,
   loading: boolean,
   formData: any,
+  id: string | null,
   apiRoute: string,
   data: any,
   loadedUnifiedValue: any[],
@@ -27,6 +28,7 @@ export default function controller(_props: any, emit: any) {
   // States
   const state = reactive<StateProps>({
     showModal: false,
+    id: null,
     loading: false,
     formData: {},
     apiRoute: '',
@@ -47,23 +49,23 @@ export default function controller(_props: any, emit: any) {
     //Map the info to dynamic form
     formFields: computed(() => {
       const data = state.data;
-      const unifiedFilters = { TableColumnName: data?.TableColumnName, Division: data?.Division };
+      const unifiedFilters = { tableColumnName: data?.tableColumnName, division: data?.division };
 
-      if (!state.formData.MatchType) {
-        state.formData.MatchType = 'EXACT';
+      if (!state.formData.matchType) {
+        state.formData.matchType = 'EXACT';
       }
 
-      if (!state.unified.value !== state.formData.UnifiedValue) {
-        const unified = state.formData.UnifiedValue;
-        state.unified.value = state.formData.UnifiedValue;
-        const desc = state.loadedUnifiedValue.find(uni => uni.UnifiedValue == unified)?.UnifiedValueDesc || '';
-        const dataValue = state.formData.UnifiedValueDesc || '';
+      if (!state.unified.value !== state.formData.unifiedValue) {
+        const unified = state.formData.unifiedValue;
+        state.unified.value = state.formData.unifiedValue;
+        const desc = state.loadedUnifiedValue.find(uni => uni.unifiedValue == unified)?.unifiedValueDesc || '';
+        const dataValue = state.formData.unifiedValueDesc || '';
         state.unified.desc = desc;
-        state.formData.UnifiedValueDesc = desc || dataValue;
+        state.formData.unifiedValueDesc = desc || dataValue;
       }
 
       return {
-        MatchTypeText: {
+        matchTypeText: {
           type: 'text',
           col: 'col-12 col-md-6',
           vIf: false,
@@ -71,7 +73,7 @@ export default function controller(_props: any, emit: any) {
             message: `Select the match type for "${computeds.sourceValue.value}"`
           }
         },
-        MatchType: {
+        matchType: {
           value: 'EXACT',
           type: 'select',
           required: true,
@@ -85,14 +87,14 @@ export default function controller(_props: any, emit: any) {
             ]
           }
         },
-        UnifiedValueText: {
+        unifiedValueText: {
           type: 'text',
           col: 'col-12 col-md-6',
           props: {
-            message: `Select the unified "${data?.TableColumnName}" for "<span class="tw-text-[#0092DB]">${computeds.sourceValue.value}</span>"`
+            message: `Select the unified "${data?.tableColumnName}" for "<span class="tw-text-[#0092DB]">${computeds.sourceValue.value}</span>"`
           }
         },
-        UnifiedValue: {
+        unifiedValue: {
           value: null,
           type: 'select',
           required: true,
@@ -102,23 +104,23 @@ export default function controller(_props: any, emit: any) {
             'hide-selected': true,
             label: 'Unified Value*'
           },
-          ...(data?.TableColumnName ? methods.getLoadOption({
-            name: 'UnifiedValue',
-            filter: { _groupBy: 'UnifiedValue,UnifiedValueDesc', ...unifiedFilters },
+          ...(data?.tableColumnName ? methods.getLoadOption({
+            name: 'unifiedValue',
+            filter: { _groupBy: 'UnifiedValue,UnifiedValueDesc', unifiedValue: { operator: "!=", value: "null" }, ...unifiedFilters },
             moreSettings: {
-              select: { label: 'UnifiedValue', id: 'UnifiedValue' },
+              select: { label: 'unifiedValue', id: 'unifiedValue' },
               loadedOptions: (data: any) => state.loadedUnifiedValue = data
             }
           }) : {})
         },
-        UnifiedValueDescText: {
+        unifiedValueDescText: {
           type: 'text',
           colClass: 'col-12 col-md-6',
           props: {
-            message: `Select the unified "${data?.TableColumnName} Description" for "<span class="tw-text-[#0092DB]">${computeds.sourceValue.value}</span>"`
+            message: `Select the unified "${data?.tableColumnName} Description" for "<span class="tw-text-[#0092DB]">${computeds.sourceValue.value}</span>"`
           }
         },
-        UnifiedValueDesc: {
+        unifiedValueDesc: {
           value: '',
           type: 'input',
           colClass: 'col-12 col-md-6 self-center',
@@ -127,14 +129,14 @@ export default function controller(_props: any, emit: any) {
             label: 'Unified Value Description'
           }
         },
-        UnifiedValue_GroupText: {
+        unifiedValueGroupText: {
           type: 'text',
           col: 'col-12 col-md-6',
           props: {
-            message: `Select the unified "${data?.TableColumnName} Group" for "<span class="tw-text-[#0092DB]">${computeds.sourceValue.value}</span>"`
+            message: `Select the unified "${data?.tableColumnName} Group" for "<span class="tw-text-[#0092DB]">${computeds.sourceValue.value}</span>"`
           }
         },
-        UnifiedValue_Group: {
+        unifiedValueGroup: {
           value: null,
           type: 'select',
           colClass: 'col-12 col-md-6 self-center',
@@ -143,19 +145,19 @@ export default function controller(_props: any, emit: any) {
             'hide-selected': true,
             label: 'Unified Value Group'
           },
-          ...(data?.TableColumnName ? methods.getLoadOption({
-            name: 'UnifiedValue_Group',
-            moreFilters: unifiedFilters
+          ...(data?.tableColumnName ? methods.getLoadOption({
+            name: 'unifiedValueGroup',
+            moreFilters: { unifiedValueGroup: { operator: "!=", value: "null" }, ...unifiedFilters}
           }) : {})
         },
-        UnifiedValue_CategoryText: {
+        unifiedValueCategoryText: {
           type: 'text',
           col: 'col-12 col-md-6',
           props: {
-            message: `Select the unified "${data?.TableColumnName} Category" for "<span class="tw-text-[#0092DB]">${computeds.sourceValue.value}</span>"`
+            message: `Select the unified "${data?.tableColumnName} Category" for "<span class="tw-text-[#0092DB]">${computeds.sourceValue.value}</span>"`
           }
         },
-        UnifiedValue_Category: {
+        unifiedValueCategory: {
           value: null,
           type: 'select',
           colClass: 'col-12 col-md-6 self-center',
@@ -164,12 +166,12 @@ export default function controller(_props: any, emit: any) {
             'hide-selected': true,
             label: 'Unified Value Category'
           },
-          ...(data?.TableColumnName ? methods.getLoadOption({
-            name: 'UnifiedValue_Category',
-            moreFilters: unifiedFilters
+          ...(data?.tableColumnName ? methods.getLoadOption({
+            name: 'unifiedValueCategory',
+            moreFilters: { unifiedValueCategory: { operator: "!=", value: "null" }, ...unifiedFilters }
           }) : {})
         },
-        RejectionComments: {
+        rejectionComments: {
           vIf: state.isApprove,
           value: '',
           type: 'input',
@@ -222,25 +224,26 @@ export default function controller(_props: any, emit: any) {
     sourceValue: computed(() => {
       const data = state.data;
 
-      return data?.TableColumnValue || data?.RuleValue || 'NULL';
+      return data?.tableColumnValue || data?.ruleValue || 'NULL';
     }),
     //Get Source Value Desc
     sourceValueDesc: computed(() => {
       const data = state.data;
 
-      return data?.TableColumnValueDesc || data?.RuleValueDesc || 'NULL';
+      return data?.tableColumnValueDesc || data?.ruleValueDesc || 'NULL';
     })
   };
 
   // Methods
   const methods = {
     //Get data by Id
-    async getData({ id = null, apiRoute = '', apiRouteDelete = null, isApprove = false, customApiRoute = '' }: {
+    async getData({ id = null, apiRoute = '', apiRouteDelete = null, isApprove = false, customApiRoute = '', params = {} }: {
       id: string | null,
       apiRoute: string,
       apiRouteDelete: string | null,
       isApprove: boolean,
       customApiRoute: string
+      params: object
     }) {
       if (!apiRoute?.length) return;
 
@@ -252,8 +255,9 @@ export default function controller(_props: any, emit: any) {
       state.customApiRoute = customApiRoute;
 
       if (!!id) {
-        await service.getDataCustom(apiRoute, id, { refresh: true, params: { include: 'tableName' } })
+        await service.getDataCustom(apiRoute, id, { refresh: true, params: { include: 'tableName', ...params } })
           .then(res => {
+            state.id = id
             state.data = clone(res);
             state.formData = clone(res);
           })
@@ -317,26 +321,26 @@ export default function controller(_props: any, emit: any) {
       const data = state.data;
       const formData = state.formData;
 
-      if (!state.isApprove && !data?.TableColumnValue) {
+      if (!state.isApprove && !data?.tableColumnValue) {
         alert.error('No Source Value found');
         return;
       }
 
-      if (data?.id) {
+      if (state?.id) {
         let mappedData = {
           ...formData,
-          TableColumnValueDesc: data.TableColumnValueDesc || null
+          tableColumnValueDesc: data.tableColumnValueDesc || null
         };
 
         if (state.isApprove) {
           mappedData = {
             ...mappedData,
-            RuleValue: data.TableColumnValue,
-            RuleValueDesc: data.TableColumnValueDesc || null,
-            ApprovalInd: state.action
+            ruleValue: data.tableColumnValue,
+            ruleValueDesc: data.tableColumnValueDesc || null,
+            approvalInd: state.action
           };
-          delete mappedData.TableColumnValue;
-          delete mappedData.TableColumnValueDesc;
+          delete mappedData.tableColumnValue;
+          delete mappedData.tableColumnValueDesc;
         }
 
         await methods.updateData({ ...data, ...mappedData });

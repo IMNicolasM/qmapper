@@ -29,7 +29,8 @@ export default function controller() {
           actions: [
             {
               name: 'edit',
-              format: (item: any) => (item?.countRequest > 0 ? { vIf: false } : {})
+              action: (item: any) => methods.openModal(item),
+              format: (item: any) => (!!item?.requested ? { vIf: false } : {})
             },
             {
               icon: 'fa-regular fa-timer',
@@ -53,9 +54,7 @@ export default function controller() {
             }
           ]
         },
-        update: {
-          method: (item: any) => methods.openModal(item),
-        }
+        update: {}
       };
     }),
     //Crud info
@@ -116,7 +115,11 @@ export default function controller() {
     },
     //Open form modal
     openModal(item: any) {
-      refs.referenceForm.value?.getData({ id: item?.id, apiRoute: 'apiRoutes.qmapper.references', apiRouteDelete: 'apiRoutes.qmapper.approvals' })
+      refs.referenceForm.value?.getData({ id: item?.uniRefId, apiRoute: 'apiRoutes.qmapper.references', apiRouteDelete: 'apiRoutes.qmapper.approvals', params: {
+        filter: {
+          field: "UNI_RefID"
+        }
+      }})
     },
     async getDataTable(refresh = false) {
       await refs.crudComponent.value.getDataTable(refresh);

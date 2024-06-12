@@ -5,8 +5,7 @@ import { PROPS_BUTTONS } from '../_pages/admin/approval/constant';
 export default {
   data() {
     return {
-      crudId: this.$uid(),
-      notToSnakeCase: ['ApprovalInd', 'Division', 'UNI_RefID', 'TableColumnName', 'TableColumnValue', 'TableColumnValueDesc', 'MatchType', 'TablePK_EDW', 'UnifiedValue', 'UnifiedValueDesc', 'UnifiedValue_Group', 'UnifiedValue_Category']
+      crudId: this.$uid()
     };
   },
   computed: {
@@ -34,15 +33,15 @@ export default {
         read: {
           columns: [
             {
-              name: 'Division',
+              name: 'division',
               label: 'Division',
-              field: 'Division',
+              field: 'division',
               align: 'rigth',
               sortable: true,
               action: 'edit'
             },
             {
-              name: 'ApprovalInd',
+              name: 'approvalInd',
               label: 'Status',
               field: row => row,
               align: 'center',
@@ -50,64 +49,64 @@ export default {
               format: item => this.getTag(item)
             },
             {
-              name: 'TableColumnName',
+              name: 'tableColumnName',
               label: 'Source Column',
-              field: 'TableColumnName',
+              field: 'tableColumnName',
               align: 'rigth',
               sortable: true
             },
             {
-              name: 'TableColumnValue',
+              name: 'tableColumnValue',
               label: 'Source Value',
-              field: 'TableColumnValue',
+              field: 'tableColumnValue',
               sortable: true,
               align: 'rigth',
               format: val => val ?? '-'
             },
             {
-              name: 'TableColumnValueDesc',
+              name: 'tableColumnValueDesc',
               label: 'Source Value Description',
-              field: 'TableColumnValueDesc',
+              field: 'tableColumnValueDesc',
               sortable: true,
               align: 'rigth',
               format: val => val ?? '-'
             },
             {
-              name: 'MatchType',
+              name: 'matchType',
               label: 'Match type',
-              field: 'MatchType',
+              field: 'matchType',
               sortable: true,
               align: 'center',
               format: val => val ?? '-'
             },
             {
-              name: 'UnifiedValue',
+              name: 'unifiedValue',
               label: 'Unified Value',
-              field: 'UnifiedValue',
+              field: 'unifiedValue',
               sortable: true,
               align: 'center',
               format: val => val ?? '-'
             },
             {
-              name: 'UnifiedValueDesc',
+              name: 'unifiedValueDesc',
               label: 'Unified Value Desc',
-              field: 'UnifiedValueDesc',
+              field: 'unifiedValueDesc',
               sortable: true,
               align: 'center',
               format: val => val ?? '-'
             },
             {
-              name: 'UnifiedValue_Group',
+              name: 'unifiedValueGroup',
               label: 'Unified Value Group',
-              field: 'UnifiedValue_Group',
+              field: 'unifiedValueGroup',
               sortable: true,
               align: 'center',
               format: val => val ?? '-'
             },
             {
-              name: 'UnifiedValue_Category',
+              name: 'unifiedValueCategory',
               label: 'Unified Value Category',
-              field: 'UnifiedValue_Category',
+              field: 'unifiedValueCategory',
               sortable: true,
               align: 'center',
               format: val => val ?? '-'
@@ -115,41 +114,41 @@ export default {
             { name: 'actions', label: this.$tr('isite.cms.form.actions'), align: 'left' }
           ],
           filters: {
-            UnifiedValue: {
+            unifiedValue: {
               value: null,
               type: 'select',
               props: {
                 label: 'Unified Value',
                 clearable: true
               },
-              ...this.getLoadOption('UnifiedValue')
+              ...this.getLoadOption('unifiedValue')
             },
-            UnifiedValueDesc: {
+            unifiedValueDesc: {
               value: null,
               type: 'select',
               props: {
                 label: 'Unified Value Description',
                 clearable: true
               },
-              ...this.getLoadOption('UnifiedValueDesc')
+              ...this.getLoadOption('unifiedValueDesc')
             },
-            UnifiedValue_Group: {
+            unifiedValueGroup: {
               value: null,
               type: 'select',
               props: {
                 label: 'Unified Value Group',
                 clearable: true
               },
-              ...this.getLoadOption('UnifiedValue_Group')
+              ...this.getLoadOption('unifiedValueGroup')
             },
-            UnifiedValue_Category: {
+            unifiedValueCategory: {
               value: null,
               type: 'select',
               props: {
                 label: 'Unified Value Category',
                 clearable: true
               },
-              ...this.getLoadOption('UnifiedValue_Category')
+              ...this.getLoadOption('unifiedValueCategory')
             },
             countRequest: {
               value: 0,
@@ -158,7 +157,7 @@ export default {
                 label: 'Pending Approvals'
               }
             },
-            TableName: {
+            tableName: {
               value: null,
               type: 'select',
               quickFilter: true,
@@ -168,10 +167,10 @@ export default {
               },
               loadOptions: {
                 apiRoute: 'apiRoutes.qmapper.metadata',
-                select: { label: 'SubjectArea', id: 'TableName' }
+                select: { label: 'subjectArea', id: 'tableName' }
               }
             },
-            MappingInd: {
+            mappingInd: {
               value: 'UNMAPPED',
               type: 'select',
               quickFilter: true,
@@ -183,7 +182,7 @@ export default {
                 ]
               }
             },
-            Division: {
+            division: {
               value: 'ALL',
               type: 'select',
               quickFilter: true,
@@ -195,11 +194,11 @@ export default {
               },
               loadOptions: {
                 apiRoute: 'apiRoutes.qmapper.references',
-                select: { label: 'Division', id: 'Division' },
-                requestParams: { filter: { _distinct: 'Division' } }
+                select: { label: 'division', id: 'division' },
+                requestParams: { filter: { _distinct: 'division' } }
               }
             },
-            SourceSystem: {
+            sourceSystem: {
               value: 'ALL',
               type: 'select',
               quickFilter: true,
@@ -211,17 +210,22 @@ export default {
               },
               loadOptions: {
                 apiRoute: 'apiRoutes.qmapper.metadata',
-                select: { label: 'SourceSystem', id: 'SourceSystem' },
-                requestParams: { filter: { _distinct: 'SourceSystem' } }
+                select: { label: 'sourceSystem', id: 'sourceSystem' },
+                requestParams: { filter: { _distinct: 'sourceSystem' } }
               }
             }
           },
           requestParams: {
-            include: 'requestApproval',
-            notToSnakeCase: this.notToSnakeCase
+            include: 'requested',
+            filter: {
+              tableColumnValue: {
+                operator: "!=",
+                value: "null"
+              }
+            }
           },
           disabled: {
-            row: (item) => item?.countRequest > 0
+            row: (item) => !!item?.requested?.length
           },
           excludeActions: ['export', 'sync', 'recommendations']
         }
@@ -234,20 +238,27 @@ export default {
   },
   methods: {
     getLoadOption(name) {
-      return {
+      const filter = {
         loadOptions: {
           apiRoute: 'apiRoutes.qmapper.references',
           select: { label: name, id: name },
           requestParams: {
             filter: {
-              _distinct: name
+              _distinct: name,
             }
           }
         }
       };
+
+      filter.loadOptions.requestParams.filter[name] = {
+        operator: "!=",
+        value: "null"
+      }
+
+      return filter;
     },
     getTag(item) {
-      const ind = item.ApprovalInd || item?.MappingInd;
+      const ind = item?.requested?.approvalInd || item?.mappingInd;
 
       if (!ind) return '-';
       const { bg, color } = PROPS_BUTTONS[ind] || {

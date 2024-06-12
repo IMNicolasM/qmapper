@@ -1,6 +1,6 @@
 <template>
   <master-modal v-model="showModal" width="320px" custom-class="!tw-max-w-[822px]"
-                :title="data?.id ? `Editing: ${data.id}` : ''"
+                :title="id ? `Editing: ${id}` : ''"
                 :actions="modalActions" :loading="loading"
                 @hide="closeModal">
     <!--Title of the modal body-->
