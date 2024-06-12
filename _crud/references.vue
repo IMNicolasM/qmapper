@@ -225,7 +225,7 @@ export default {
             }
           },
           disabled: {
-            row: (item) => !!item?.requested?.length
+            row: (item) => !!item?.requested
           },
           excludeActions: ['export', 'sync', 'recommendations']
         }

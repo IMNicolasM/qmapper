@@ -115,7 +115,7 @@ export default function controller() {
     },
     //Open form modal
     openModal(item: any) {
-      refs.referenceForm.value?.getData({ id: item?.uniRefId, apiRoute: 'apiRoutes.qmapper.references', apiRouteDelete: 'apiRoutes.qmapper.approvals', params: {
+      refs.referenceForm.value?.getData({ id: item?.uniRefId, apiRoute: 'apiRoutes.qmapper.references', customApiRoute: 'apiRoutes.qmapper.sendApproval', apiRouteDelete: 'apiRoutes.qmapper.approvals', params: {
         filter: {
           field: "UNI_RefID"
         }
