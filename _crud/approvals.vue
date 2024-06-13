@@ -39,7 +39,7 @@ export default {
               field: 'userCreated',
               sortable: true,
               align: 'center',
-              format: val => val?.fullName || 'NAN'
+              format: val => val?.fullName || val?.full_name || 'NAN'
             },
             {
               name: 'tableColumnName',

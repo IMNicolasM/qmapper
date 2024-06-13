@@ -35,7 +35,7 @@ export default function controller() {
             {
               name: 'edit',
               action: (item: any) => methods.openModal(item),
-              format: (item: any) => (!!item?.requested ? { vIf: false } : {})
+              format: (item: any) => (item?.approvalInd === PROPS_BUTTONS.REQUESTED.action ? {} : { vIf: false })
             },
             {
               icon: 'fa-regular fa-circle-check',
@@ -43,7 +43,7 @@ export default function controller() {
               tooltip: 'Approve',
               name: 'approve',
               action: (item: any) => methods.showModal(PROPS_BUTTONS.APPROVED.action, item),
-              format: (item: any) => ({ vIf: store.hasAccess('imapper.approvals.acceptance') && item.ApprovalInd === PROPS_BUTTONS.REQUESTED.action })
+              format: (item: any) => ({ vIf: store.hasAccess('imapper.approvals.acceptance') && item?.approvalInd === PROPS_BUTTONS.REQUESTED.action })
             },
             {
               icon: 'fa-regular fa-ban',
@@ -51,7 +51,7 @@ export default function controller() {
               tooltip: 'Deny',
               name: 'deny',
               action: (item: any) => methods.showModal(PROPS_BUTTONS.DENIED.action, item),
-              format: (item: any) => ({ vIf: store.hasAccess('imapper.approvals.acceptance') && item.ApprovalInd === PROPS_BUTTONS.REQUESTED.action })
+              format: (item: any) => ({ vIf: store.hasAccess('imapper.approvals.acceptance') && item?.approvalInd === PROPS_BUTTONS.REQUESTED.action })
             },
             {
               icon: 'fa-regular fa-ban',
@@ -61,7 +61,7 @@ export default function controller() {
               action: (item: any) => methods.showModal(PROPS_BUTTONS.CANCELLED.action, item),
               format: (item: any) => ({
                 // @ts-ignore
-                vIf: item.ApprovalInd === PROPS_BUTTONS.REQUESTED.action && store?.state?.quserAuth?.userId == item.RuleCreatedBy
+                vIf: item.approvalInd === PROPS_BUTTONS.REQUESTED.action && store?.state?.quserAuth?.userId == item.ruleCreatedBy && !store.hasAccess('imapper.approvals.acceptance')
               })
             }
           ]
@@ -115,8 +115,9 @@ export default function controller() {
         state.show = false;
         const attributes = {
           ...att,
-          ApprovalInd: action,
-          RejectionComments: state.comment
+          userCreated: null,
+          approvalInd: action,
+          rejectionComments: state.comment
         };
         await services.sendActionRuleApprove({ attributes });
         await cache.remove({ allKey: 'apiRoutes.qmapper.references' });
@@ -145,8 +146,7 @@ export default function controller() {
     openModal(item: any) {
 
       refs.referenceForm.value?.getData({
-        // @ts-ignore
-        customApiRoute: `${config('apiRoutes.qmapper.approvals')}/action`,
+        customApiRoute: 'apiRoutes.qmapper.updateApproval',
         isApprove: true,
         id: item?.seqNo,
         apiRoute: 'apiRoutes.qmapper.approvals',

@@ -255,7 +255,6 @@ export default function controller(_props: any, emit: any) {
       state.customApiRoute = customApiRoute;
 
       if (!!id) {
-        console.warn(apiRoute, id, params)
         await service.getDataCustom(apiRoute, id, { refresh: true, params: { include: 'tableName', ...params } })
           .then(res => {
             state.id = id
