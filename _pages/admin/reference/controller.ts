@@ -3,7 +3,7 @@ import { reactive, toRefs, computed, ref } from 'vue';
 import crud from 'src/modules/qcrud/_components/crud.vue';
 // @ts-ignore
 import customForm from 'modules/qmapper/_components/customForm/index.vue'
-import { uid, store, i18n, alert, cache } from 'src/plugins/utils';
+import { uid, store, i18n, alert, cache, router } from 'src/plugins/utils';
 import { PROPS_BUTTONS } from '../approval/constant';
 import services from '../approval/services';
 
@@ -36,8 +36,8 @@ export default function controller() {
               icon: 'fa-regular fa-timer',
               label: 'Request Pending',
               vIf: false,
-              action: () => {
-                this.$router.push({ name: 'qmapper.admin.approvals', params: {} });
+              action: (item: any) => {
+                  router.router.push({ name: 'qmapper.admin.approvals', query: { seqNo: item?.requested?.seqNo } });
               },
               format: (item: any) => (!!item?.requested ? { vIf: true } : {})
             },
@@ -46,7 +46,7 @@ export default function controller() {
               vIf: false,
               tooltip: 'Cancel',
               name: 'cancel',
-              action: (item: any) => methods.quickCancel(item.SeqNo),
+              action: (item: any) => methods.quickCancel(item?.requested?.seqNo),
               format: (item: any) => ({
                 // @ts-ignore
                 vIf: item?.requested?.approvalInd === PROPS_BUTTONS.REQUESTED.action && store?.state?.quserAuth?.userId == item?.requested?.ruleCreatedBy
@@ -99,8 +99,8 @@ export default function controller() {
             handler: async () => {
               try {
                 const attributes = {
-                  id,
-                  ApprovalInd: PROPS_BUTTONS.CANCELLED.action,
+                  seqNo: id,
+                  approvalInd: PROPS_BUTTONS.CANCELLED.action,
                 };
                 await services.sendActionRuleApprove({ attributes });
                 await methods.getDataTable(true);

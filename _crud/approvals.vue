@@ -42,6 +42,13 @@ export default {
               format: val => val?.fullName || val?.full_name || 'NAN'
             },
             {
+              name: 'rejectionComments',
+              label: 'Comments',
+              field: 'rejectionComments',
+              align: 'center',
+              format: val => val || '-'
+            },
+            {
               name: 'tableColumnName',
               label: 'Source Column',
               field: 'tableColumnName',
@@ -208,7 +215,15 @@ export default {
                 select: { label: 'sourceSystem', id: 'sourceSystem' },
                 requestParams: { filter: { _distinct: 'sourceSystem' } }
               }
-            }
+            },
+            seqNo: {
+              value: '',
+              type: 'input',
+              props: {
+                type: 'text',
+                label: 'ID'
+              }
+            },
           },
           requestParams: {
             notToSnakeCase: this.notToSnakeCase,
