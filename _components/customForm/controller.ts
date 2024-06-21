@@ -91,7 +91,7 @@ export default function controller(_props: any, emit: any) {
           type: 'text',
           col: 'col-12 col-md-6',
           props: {
-            message: `Select the unified "${data?.tableColumnName}" for "<span class="tw-text-[#0092DB]">${computeds.sourceValue.value}</span>"`
+            message: methods.getDefaultText(data?.tableColumnName)
           }
         },
         unifiedValue: {
@@ -117,7 +117,7 @@ export default function controller(_props: any, emit: any) {
           type: 'text',
           colClass: 'col-12 col-md-6',
           props: {
-            message: `Select the unified "${data?.tableColumnName} Description" for "<span class="tw-text-[#0092DB]">${computeds.sourceValue.value}</span>"`
+            message: methods.getDefaultText(`${data?.tableColumnName} Description`)
           }
         },
         unifiedValueDesc: {
@@ -133,7 +133,7 @@ export default function controller(_props: any, emit: any) {
           type: 'text',
           col: 'col-12 col-md-6',
           props: {
-            message: `Select the unified "${data?.tableColumnName} Group" for "<span class="tw-text-[#0092DB]">${computeds.sourceValue.value}</span>"`
+            message: methods.getDefaultText(`${data?.tableColumnName} Group`)
           }
         },
         unifiedValueGroup: {
@@ -154,7 +154,7 @@ export default function controller(_props: any, emit: any) {
           type: 'text',
           col: 'col-12 col-md-6',
           props: {
-            message: `Select the unified "${data?.tableColumnName} Category" for "<span class="tw-text-[#0092DB]">${computeds.sourceValue.value}</span>"`
+            message: methods.getDefaultText(`${data?.tableColumnName} Category`)
           }
         },
         unifiedValueCategory: {
@@ -325,7 +325,6 @@ export default function controller(_props: any, emit: any) {
         alert.error('No Source Value found');
         return;
       }
-
       if (state?.id) {
         let mappedData = {
           ...formData,
@@ -334,13 +333,11 @@ export default function controller(_props: any, emit: any) {
 
         if (state.isApprove) {
           mappedData = {
-            ...mappedData,
             ruleValue: data.tableColumnValue,
             ruleValueDesc: data.tableColumnValueDesc || null,
+            ...mappedData,
             approvalInd: state.action
           };
-          delete mappedData.tableColumnValue;
-          delete mappedData.tableColumnValueDesc;
         }
 
         await methods.updateData({ ...data, ...mappedData });
@@ -364,6 +361,9 @@ export default function controller(_props: any, emit: any) {
       });
 
       state.loading = false;
+    },
+    getDefaultText(str: string) {
+      return `Select the unified "<span class="text-weight-bold">${str}</span>"`
     }
   };
 

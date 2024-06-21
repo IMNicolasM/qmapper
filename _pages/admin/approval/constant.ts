@@ -19,11 +19,15 @@ export const PROPS_BUTTONS = {
     btnColor: '#49C185'
   },
   CANCELLED: {
-    bg: '#E8EBEE',
-    color: '#496D8B',
+    bg: '#FDECD4',
+    color: '#B35E0F',
     action: 'CANCELLED',
     label: 'Cancel Request',
     btnColor: '#C42C27'
+  },
+  UNMAPPED: {
+    bg: '#E8EBEE',
+    color: '#496D8B'
   },
   DEFAULT: {
     btnColor: 'gray',

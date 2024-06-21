@@ -117,8 +117,10 @@ export default function controller() {
           ...att,
           userCreated: null,
           approvalInd: action,
-          rejectionComments: state.comment
+          rejectionComments: state.comment,
+          reference: null
         };
+        console.warn({attributes})
         await services.sendActionRuleApprove({ attributes });
         await cache.remove({ allKey: 'apiRoutes.qmapper.references' });
         state.loading = false;
