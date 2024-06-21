@@ -128,7 +128,7 @@ export default {
                 label: 'Unified Value',
                 clearable: true
               },
-              ...this.getLoadOption('unifiedValue')
+              ...this.getLoadOption('unifiedValue', { _distinct: 'UnifiedValue'})
             },
             unifiedValueDesc: {
               value: null,
@@ -137,7 +137,7 @@ export default {
                 label: 'Unified Value Description',
                 clearable: true
               },
-              ...this.getLoadOption('unifiedValueDesc')
+              ...this.getLoadOption('unifiedValueDesc', { _distinct: 'UnifiedValueDesc'})
             },
             unifiedValueGroup: {
               value: null,
@@ -146,7 +146,7 @@ export default {
                 label: 'Unified Value Group',
                 clearable: true
               },
-              ...this.getLoadOption('unifiedValueGroup')
+              ...this.getLoadOption('unifiedValueGroup', { _distinct: 'UnifiedValue_Group'})
             },
             unifiedValueCategory: {
               value: null,
@@ -155,7 +155,7 @@ export default {
                 label: 'Unified Value Category',
                 clearable: true
               },
-              ...this.getLoadOption('unifiedValueCategory')
+              ...this.getLoadOption('unifiedValueCategory', { _distinct: 'UnifiedValue_Category'})
             },
             tableName: {
               value: null,
@@ -197,7 +197,7 @@ export default {
               loadOptions: {
                 apiRoute: 'apiRoutes.qmapper.references',
                 select: { label: 'division', id: 'division' },
-                requestParams: { filter: { _distinct: 'division' } }
+                requestParams: { filter: { _distinct: 'Division' } }
               }
             },
             sourceSystem: {
@@ -213,7 +213,7 @@ export default {
               loadOptions: {
                 apiRoute: 'apiRoutes.qmapper.metadata',
                 select: { label: 'sourceSystem', id: 'sourceSystem' },
-                requestParams: { filter: { _distinct: 'sourceSystem' } }
+                requestParams: { filter: { _distinct: 'SourceSystem' } }
               }
             },
             seqNo: {

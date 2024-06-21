@@ -122,7 +122,7 @@ export default {
                 label: 'Unified Value',
                 clearable: true
               },
-              ...this.getLoadOption('unifiedValue')
+              ...this.getLoadOption('unifiedValue', 'UnifiedValue')
             },
             unifiedValueDesc: {
               value: null,
@@ -131,7 +131,7 @@ export default {
                 label: 'Unified Value Description',
                 clearable: true
               },
-              ...this.getLoadOption('unifiedValueDesc')
+              ...this.getLoadOption('unifiedValueDesc', 'UnifiedValueDesc')
             },
             unifiedValueGroup: {
               value: null,
@@ -140,7 +140,7 @@ export default {
                 label: 'Unified Value Group',
                 clearable: true
               },
-              ...this.getLoadOption('unifiedValueGroup')
+              ...this.getLoadOption('unifiedValueGroup', 'UnifiedValue_Group')
             },
             unifiedValueCategory: {
               value: null,
@@ -149,7 +149,7 @@ export default {
                 label: 'Unified Value Category',
                 clearable: true
               },
-              ...this.getLoadOption('unifiedValueCategory')
+              ...this.getLoadOption('unifiedValueCategory', 'UnifiedValue_Category')
             },
             countRequest: {
               value: 0,
@@ -196,7 +196,7 @@ export default {
               loadOptions: {
                 apiRoute: 'apiRoutes.qmapper.references',
                 select: { label: 'division', id: 'division' },
-                requestParams: { filter: { _distinct: 'division' } }
+                requestParams: { filter: { _distinct: 'Division' } }
               }
             },
             sourceSystem: {
@@ -212,7 +212,7 @@ export default {
               loadOptions: {
                 apiRoute: 'apiRoutes.qmapper.metadata',
                 select: { label: 'sourceSystem', id: 'sourceSystem' },
-                requestParams: { filter: { _distinct: 'sourceSystem' } }
+                requestParams: { filter: { _distinct: 'SourceSystem' } }
               }
             }
           },
@@ -223,7 +223,8 @@ export default {
               tableColumnValue: {
                 operator: "!=",
                 value: "null"
-              }
+              },
+              countRequest: "0"
             }
           },
           disabled: {
@@ -239,14 +240,14 @@ export default {
     }
   },
   methods: {
-    getLoadOption(name) {
+    getLoadOption(name, distinct) {
       const filter = {
         loadOptions: {
           apiRoute: 'apiRoutes.qmapper.references',
           select: { label: name, id: name },
           requestParams: {
             filter: {
-              _distinct: name,
+              _distinct: distinct || name,
             }
           }
         }
