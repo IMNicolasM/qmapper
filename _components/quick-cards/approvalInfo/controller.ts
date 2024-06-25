@@ -1,5 +1,5 @@
 import { computed, reactive, ref, onMounted, toRefs, watch } from 'vue';
-import { clone, i18n } from 'src/plugins/utils';
+import { clone, i18n, router } from 'src/plugins/utils';
 
 export default function controller(props: any, emit: any) {
 
@@ -44,24 +44,29 @@ export default function controller(props: any, emit: any) {
           params: {
             filter: {
               approvalInd: 'APPROVED',
-              date: { from: methods.getUTCDate(7), to: methods.getUTCDate() }
+              ruleCreatedDate: { from: methods.getUTCDate(7), to: methods.getUTCDate(), operator: 'between' }
             }, take: 1
           },
           format: (item: any) => methods.formatData(item, {
             icon: 'fa-solid fa-thumbs-up',
-            desc: 'Approvals past 7 days'
+            desc: 'Approvals past 7 days',
+            action: () => router.router.push({ name: 'qmapper.admin.approvals', query: { "imapper.approvals": JSON.stringify({approvalInd: 'APPROVED'}) } })
           })
         },
         {
           id: 4,
           route: state.principalRoute,
           params: {
-            filter: { approvalInd: 'DENIED', date: { from: methods.getUTCDate(2), to: methods.getUTCDate() } },
+            filter: {
+              approvalInd: 'DENIED',
+              ruleCreatedDate: { from: methods.getUTCDate(7), to: methods.getUTCDate(), operator: 'between' }
+            },
             take: 1
           },
           format: (item: any) => methods.formatData(item, {
             icon: 'fa-solid fa-thumbs-down',
-            desc: 'Rejections past 7 days'
+            desc: 'Rejections past 7 days',
+            action: () => router.router.push({ name: 'qmapper.admin.approvals', query: { "imapper.approvals": JSON.stringify({approvalInd: 'DENIED'}) } })
           }, false)
         }
       ];
@@ -74,7 +79,7 @@ export default function controller(props: any, emit: any) {
     formatData(item: any, props: any = {}, isDefaultColor = true) {
       let response: any = clone(state.defaultFormatCard);
       response.title = {
-        label: i18n.trn(item.response?.meta?.page?.total || '0', null)
+        label: i18n.trn(item.response?.meta?.page?.total || 0, null)
       };
 
       response.icon.name = props.icon || '';
@@ -102,7 +107,7 @@ export default function controller(props: any, emit: any) {
           color: 'tw-text-[#881915]',
           icon: {
             ...response.icon,
-            bg: 'tw-bg-[#FCE0DF]'
+            bgStyle: 'background-color: #FCE0DF'
           }
         };
       }
@@ -111,11 +116,10 @@ export default function controller(props: any, emit: any) {
     getUTCDate(minusDays = 0) {
       const currentDate = new Date();
 
-      if (minusDays > 0) {
-        currentDate.setUTCDate(currentDate.getUTCDate() - minusDays);
-      }
+      // Subtract the specified number of days
+      currentDate.setDate(currentDate.getDate() - minusDays);
 
-      return currentDate.toISOString();
+      return currentDate.toISOString().replace('T', ' ');
     }
   };
 

@@ -4,8 +4,7 @@
       <div class="full-width flex tw-items-center tw-justify-between">
         <div v-if="title" :class="`tw-text-2xl tw-font-bold ${color} ${title?.class || ''}`">{{title.label}}</div>
 
-        <div v-if="icon" :class="`flex tw-bg-green-100 tw-p-3 tw-items-center tw-rounded-2xl tw-place-content-center tw-size-11 ${icon?.bg || ''}`">
-
+        <div v-if="icon" class="flex tw-bg-green-100 tw-p-3 tw-items-center tw-rounded-2xl tw-place-content-center tw-size-11" :style="icon?.bgStyle || ''">
           <q-icon :name="icon.name" :class="color" v-bind="icon.props || {}" />
         </div>
       </div>

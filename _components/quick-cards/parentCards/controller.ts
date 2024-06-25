@@ -26,19 +26,25 @@ export default function controller(props: any, emit: any) {
     async getData() {
       const requests = [];
       const results = [];
+      const firstResult = [];
       const routes = props.apiRoutes;
 
       for (const route of routes) {
         requests.push(
           services.getData(true, route.params || {}, route.route || '', route.id)
         )
+        firstResult.push({
+          loading: true
+        })
       }
+
+      state.cardsData = firstResult;
 
       // @ts-ignore
       await Promise.allSettled(requests).then(result => {
         result.forEach(res => {
           const { value } = res;
-          const route = routes.find(r => r.id == value.id);
+          const route = routes.find(r => r.id == value?.id);
           if(route) {
             results.push({
               loading: true,
