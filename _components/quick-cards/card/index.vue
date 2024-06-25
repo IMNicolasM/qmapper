@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div v-if="!loading" id="card" class="flex tw-max-w-72 tw-rounded-2xl">
+    <div v-if="!loading" id="card" class="flex tw-max-w-72 tw-min-w-60 tw-rounded-2xl">
       <div class="full-width flex tw-items-center tw-justify-between">
         <div v-if="title" :class="`tw-text-2xl tw-font-bold ${color} ${title?.class || ''}`">{{title.label}}</div>
 
@@ -52,6 +52,8 @@ export default defineComponent({
   gap: 14px;
   background: #FFFFFF;
   /* Card */
-  box-shadow: 0px 12px 46px rgba(0, 0, 0, 0.07), 0px 4.62222px 14.6519px rgba(0, 0, 0, 0.0425185), 0px 0.977778px 3.74815px rgba(0, 0, 0, 0.0274815);
+  box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.07),
+  0px 2px 6px rgba(0, 0, 0, 0.0425185),
+  0px 0.5px 1.5px rgba(0, 0, 0, 0.0274815);
 }
 </style>

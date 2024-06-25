@@ -9,7 +9,8 @@ export default {
   quickCards: [
     {
       active: true,
-      permission: 'profile.user.manage',
+      col: 'col-12',
+      permission: 'imapper.approvals.manage',
       component: () => import('src/modules/qmapper/_components/quick-cards/approvalInfo/index.vue')
     }
   ]

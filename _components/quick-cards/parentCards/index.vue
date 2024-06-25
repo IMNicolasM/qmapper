@@ -2,7 +2,7 @@
   <div id="parent">
     <h3 v-if="title" class="tw-text-xl text-primary tw-font-semibold">{{ title }}</h3>
     <br />
-    <div class="flex tw-gap-4">
+    <div class="flex no-wrap tw-gap-4 tw-overflow-x-auto tw-py-3 tw-px-1.5">
       <template v-for="card of cardsData">
         <simple-card v-bind="card" />
       </template>
