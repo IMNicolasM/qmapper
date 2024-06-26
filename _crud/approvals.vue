@@ -62,7 +62,7 @@ export default {
               field: 'ruleCreatedDate',
               align: 'center',
               sortable: true,
-              format: val => val ? this.getDate(val) : '-',
+              format: val => val ? this.getDate(val) : '-'
             },
             {
               name: 'ruleValue',
@@ -128,7 +128,7 @@ export default {
                 label: 'Unified Value',
                 clearable: true
               },
-              ...this.getLoadOption('unifiedValue', { _distinct: 'UnifiedValue'})
+              ...this.getLoadOption('unifiedValue', { _distinct: 'UnifiedValue' })
             },
             unifiedValueDesc: {
               value: null,
@@ -137,7 +137,7 @@ export default {
                 label: 'Unified Value Description',
                 clearable: true
               },
-              ...this.getLoadOption('unifiedValueDesc', { _distinct: 'UnifiedValueDesc'})
+              ...this.getLoadOption('unifiedValueDesc', { _distinct: 'UnifiedValueDesc' })
             },
             unifiedValueGroup: {
               value: null,
@@ -146,7 +146,7 @@ export default {
                 label: 'Unified Value Group',
                 clearable: true
               },
-              ...this.getLoadOption('unifiedValueGroup', { _distinct: 'UnifiedValue_Group'})
+              ...this.getLoadOption('unifiedValueGroup', { _distinct: 'UnifiedValue_Group' })
             },
             unifiedValueCategory: {
               value: null,
@@ -155,7 +155,7 @@ export default {
                 label: 'Unified Value Category',
                 clearable: true
               },
-              ...this.getLoadOption('unifiedValueCategory', { _distinct: 'UnifiedValue_Category'})
+              ...this.getLoadOption('unifiedValueCategory', { _distinct: 'UnifiedValue_Category' })
             },
             tableName: {
               value: null,
@@ -223,7 +223,7 @@ export default {
                 type: 'text',
                 label: 'ID'
               }
-            },
+            }
           },
           requestParams: {
             notToSnakeCase: this.notToSnakeCase,
@@ -239,7 +239,7 @@ export default {
     getTag(item) {
       const ind = item.approvalInd;
       if (!ind) return '-';
-      const { bg, color } = PROPS_BUTTONS[ind] || PROPS_BUTTONS.DEFAULT
+      const { bg, color } = PROPS_BUTTONS[ind] || PROPS_BUTTONS.DEFAULT;
 
       // <i className="fa-solid fa-comment-dots"></i>
       return `<span class="tw-border tw-py-0.5 tw-px-2 tw-rounded-md tw-font-bold" style="background-color: ${bg}; color: ${color}; font-size: 10px;">${ind}</span>`;
@@ -252,7 +252,7 @@ export default {
 
       if (!diffColumn?.length) columnToCompare = column;
       let compareValue = row[column];
-      let diffValue = !!row?.reference ? row?.reference[columnToCompare] : "-";
+      let diffValue = !!row?.reference ? row?.reference[columnToCompare] : '-';
 
       const { color } = PROPS_BUTTONS[row[columnColor]] || PROPS_BUTTONS.DEFAULT;
 
@@ -266,12 +266,17 @@ export default {
 </div>`;
     },
     //Get Load Option
-    getLoadOption({ name, moreFilters = {}, apiRoute = 'apiRoutes.qmapper.references', filter = {}, select = false }) {
+    getLoadOption(name, moreFilters = {}, apiRoute = 'apiRoutes.qmapper.references', filter = {}, select = false) {
       if (!Object.keys(filter)?.length) {
         filter = {
           _distinct: name,
           ...moreFilters
         };
+
+        filter[name] = {
+          operator: '!=',
+          value: 'null'
+        }
       }
 
       if (!select) {
@@ -295,7 +300,7 @@ export default {
 <span><b>Date:</b> ${date[0]}</span>
 <br />
 <span><b>Hour:</b> ${date[1]}</span>
-</div>`
+</div>`;
     }
   }
 };

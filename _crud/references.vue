@@ -46,7 +46,6 @@ export default {
               label: 'Status',
               field: row => row,
               align: 'center',
-              sortable: true,
               format: item => this.getTag(item)
             },
             {

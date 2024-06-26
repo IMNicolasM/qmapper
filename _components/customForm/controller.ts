@@ -147,7 +147,7 @@ export default function controller(_props: any, emit: any) {
           },
           ...(data?.tableColumnName ? methods.getLoadOption({
             name: 'unifiedValueGroup',
-            moreFilters: { unifiedValueGroup: { operator: "!=", value: "null" }, ...unifiedFilters}
+            moreFilters: { _distinct: 'UnifiedValue_Group', unifiedValueGroup: { operator: "!=", value: "null" }, ...unifiedFilters}
           }) : {})
         },
         unifiedValueCategoryText: {
@@ -168,7 +168,7 @@ export default function controller(_props: any, emit: any) {
           },
           ...(data?.tableColumnName ? methods.getLoadOption({
             name: 'unifiedValueCategory',
-            moreFilters: { unifiedValueCategory: { operator: "!=", value: "null" }, ...unifiedFilters }
+            moreFilters: { _distinct: 'UnifiedValue_Category', unifiedValueCategory: { operator: "!=", value: "null" }, ...unifiedFilters }
           }) : {})
         },
         rejectionComments: {
@@ -296,9 +296,13 @@ export default function controller(_props: any, emit: any) {
                   }) {
       if (!Object.keys(filter)?.length) {
         filter = {
-          _distinct: name,
           ...moreFilters
         };
+
+        filter[name] = {
+          operator: '!=',
+          value: 'null'
+        }
       }
       return {
         loadOptions: {
